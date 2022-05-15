@@ -1,12 +1,17 @@
-var express = require('express');
-var app = express();
-var router = express.Router();
-const User = require("../models/user")
+const User = require("../../models/user")
 
-router.get('', function(req, res){
-  User.find({}, function(err, result) {
-    res.render('users', {users:result});
-  })
+const express = require('express');
+const router = express.Router();
+
+router.get('/', function(req, res){
+    console.log("users");
+    User.find({}, function(err, result) {
+        res.render('users', {users: result});
+    })
+})
+
+router.get('/new', async function(req, res) {
+    res.render('user_edit');
 })
 
 router.post('/new', async function(req, res) {
@@ -29,17 +34,5 @@ router.post('/new', async function(req, res) {
   res.end("end")
 
 })
-
-
-router.get("/:id", function(req, res) {
-  User.find({_id: req.params.id}, function(err, result){
-    if (err) {
-      res.send(err);
-    } else {
-      res.send(result);
-    }
-  })
-});
-
 
 module.exports = router
