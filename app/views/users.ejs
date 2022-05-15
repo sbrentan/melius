@@ -5,7 +5,10 @@
 	</head>
 	<body>
 		Sciao belo
+		<br>
 		<% for(i=0; i < users.length; i++) { %>
-		<%= users[i].name %> <br><% } %>
+			<a href="/ui/users/<%= users[i]._id %>/profile"><%= users[i].name %></a>
+			<br>
+		<% } %>
 	</body>
 </html>

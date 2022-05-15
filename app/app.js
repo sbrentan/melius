@@ -11,8 +11,7 @@ app.use('/ui', require('./controllers/ui/index'))
 app.use('/api', require('./controllers/api/index'))
 
 app.get('/', function(req, res) {
-  res.writeHead(200, {'Content-Type': 'text/html'});
-  res.end('Index page');
+  res.render('home');
 })
 
 module.exports = app

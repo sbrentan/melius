@@ -1,38 +1,99 @@
 const User = require("../../models/user")
+var config = require('../../config')
+var md5 = require("md5")
 
 const express = require('express');
 const router = express.Router();
 
-router.get('/', function(req, res){
-    console.log("users");
-    User.find({}, function(err, result) {
-        res.render('users', {users: result});
+//ottiene tutti gli utenti 
+router.get("/", async function(req, res) {
+    User.find({}, function(err, result){
+        if (err) {
+            console.log("Users not found");
+            res.status(404).json({status: 404, message: "Users not found"});
+        } else {
+            res.send(result);
+        }
+    });
+});
+
+//crea un utente
+router.post('/', async function(req, res) {
+    
+    var user = new User({
+        name: req.body.name,
+        email: req.body.email,
+        password: md5(req.body.password)
+    });
+    
+    //attende finchè non finisce il save nel db
+    result = await user.save(function (err, u) {
+        if (err) {
+            console.log(err);
+        } else {
+          console.log(u.name + " saved to user collection.");
+        }
+    });
+    
+    res.redirect(config.root);
+});
+
+//ottiene utente con un certo id
+router.get("/:id", async function(req, res) {
+    User.find({_id: req.params.id}, function(err, result){
+        if (err) {
+            console.log("User not found");
+            res.status(404).json({status: 404, message: "User not found"});
+        } else {
+            res.send(result);
+        }
     })
-})
+});
 
-router.get('/new', async function(req, res) {
-    res.render('user_edit');
-})
+//modifica l'utente
+router.post("/:id", async function(req, res) {
+    
+    User.findOne({_id: req.params.id}, async function(err, result){
+        if(err){
+            console.log("User not found");
+            res.status(404).json({status: 404, message: "User not found"});
+        } else {
+            const filter = { _id: result._id };
+            const update = { name: req.body.name, email: req.body.email, password: md5(req.body.password) };
+            
+            User.findOneAndUpdate(filter, update, {new: true}, function(err, result){
+                if(err){
+                    console.log("Oops! Something went wrong while updating");
+                    res.status(500).json({status: 500, message: "Internal server error while updating"});
+                } else {
+                    console.log("User updated");
+                    res.send(result);
+                }
+            });
+        }
+    })
+    
+});
 
-router.post('/new', async function(req, res) {
-
-  // Create an instance of model SomeModel
-  var awesome_instance = new User({
-      name: "simone",
-      email: "maio",
-      password: "pss"
-  });
-
-  // Save the new model instance, passing a callback
-  result = await awesome_instance.save(function (err, u) {
-    if (err) console.log(err);
-    else{
-      console.log(u.name + " saved to user collection.");
-    }
-  });
-  console.log(result)
-  res.end("end")
-
-})
+//elimina utente
+router.get("/:id/purge", function(req, res) { 
+    User.findOne({_id: req.params.id}, async function(err, result){
+        if(err){
+            console.log("User not found");
+            res.status(404).json({status: 404, message: "User not found"});
+        } else {
+            
+            User.deleteOne({ _id: result._id }, function(err, result){
+                if(err){
+                    console.log("Oops! Something went wrong while deleting");
+                    res.status(500).json({status: 500, message: "Internal server error while deleting"});
+                } else {
+                    console.log("User deleted");
+                    res.status(200).json({status: 200, message: "User deleted"});
+                }
+            });
+        }
+    })
+});
 
 module.exports = router
