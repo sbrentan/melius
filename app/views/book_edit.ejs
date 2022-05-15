@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Edit User</title>
+    </head>
+    <body>
+        Sciao belo
+        <br>
+        <form action="/api/books<%= book ? '/'+book._id : '' %>" method="POST">
+            <label>Title: </label><input type="text" name="title" value='<%= book ? book.title : "" %>' required><br>
+            <label>Description: </label><input type="text" name="description" value='<%= book ? book.description : "" %>' required><br>
+            <label>Author: </label><input type="text" name="author" value='<%= book ? book.author : "" %>' required><br>
+            <label>Price: </label><input type="text" name="price" value='<%= book ? book.price : "" %>' required><br>
+            <input type="submit" value="Submit">
+        </form>
+        <form action="/api/books/<%= book.id %>/purge" method="POST">
+            <button>Purge</button>
+        </form>
+  </body>
+</html>
