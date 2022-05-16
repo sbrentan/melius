@@ -1,6 +1,7 @@
 const User = require("../../models/user")
 var config = require('../../config')
 var md5 = require("md5")
+var auth = require("../../middlewares/auth")
 
 const express = require('express');
 const router = express.Router();
@@ -39,7 +40,13 @@ router.post('/', async function(req, res) {
 });
 
 //ottiene utente con un certo id
-router.get("/:id", async function(req, res) {
+router.get("/:id", auth, async function(req, res) {
+    if(req.permission != req.params.id){
+        console.log("Unathorized");
+        res.status(401).json({status: 401, message: "Unathorized"});
+        return;
+    }  
+    
     User.find({_id: req.params.id}, function(err, result){
         if (err) {
             console.log("User not found");

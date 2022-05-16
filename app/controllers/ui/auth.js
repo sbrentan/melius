@@ -3,12 +3,12 @@ var router = express.Router();
 var config = require('../../config')
 const User = require("../../models/user")
 
-router.get('/', function(req, res){
-    res.render('users');
+router.get('/login', async function(req, res) {
+    res.render('login');
 })
 
-router.get('/new', async function(req, res) {
-    res.render('user_edit');
+router.get('/:id', async function(req, res) {
+    res.render('profile');
 })
 
 module.exports = router
