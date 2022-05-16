@@ -11,7 +11,7 @@ app.use('/ui', require('./controllers/ui/index'))
 app.use('/api', require('./controllers/api/index'))
 
 app.get('/', function(req, res) {
-  res.render('home');
+    res.render('home');
 })
 
 module.exports = app

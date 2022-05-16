@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Copies</title>
+	</head>
+	<body>
+		Sciao belo<br>
+		<% for(i=0; i < copies.length; i++) { %>
+		<a href="/ui/copies/<%= copies[i]._id %>"><%= copies[i].isbn %></a>  <br><% } %>
+		<br><a href="/ui/copies/new">New copy</a>
+	</body>
+</html>

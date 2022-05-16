@@ -6,7 +6,7 @@ const express = require('express');
 const router = express.Router();
 
 //ottiene tutti gli utenti 
-router.get("/", async function(req, res) {
+router.get("/", auth, async function(req, res) {
     User.find({}, function(err, result){
         if (err) {
             console.log("Users not found");

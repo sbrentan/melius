@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
-const Book = require("../../models/book")
+const Copy = require("../../models/copy")
 
 router.get('/', async function(req, res){
-    Book.find({}, async function(err, result) {
+    Copy.find({}, async function(err, result) {
     	if(err)
     	res.writeHead(200, { "Content-Type": "text/json"})
     	res.send(result)
@@ -11,22 +11,22 @@ router.get('/', async function(req, res){
 })
 
 router.post('/', async function(req, res){
-    var new_book = new Book({
-		title: req.body.title,
-		description: req.body.description,
-		author: req.body.author,
-		image: ""
+    var new_copy = new Copy({
+		isbn: req.body.isbn,
+		owner: req.body.owner,
+		buyer: "",
+		price: req.body.price
 	});
 
 	// Save the new model instance, passing a callback
-	result = await new_book.save(async function (err, book) {
+	result = await new_copy.save(async function (err, copy) {
 		if (err){
 			console.log(err);
 			res.status(500).json({status: 500, message: "Internal server error: " + err})
 		}
 		else{
-			console.log(book.title + " saved to book collection.");
-			res.status(200).json({status: 200, message: "Book created successfully"})
+			console.log(copy.isbn + " saved to copy collection.");
+			res.status(200).json({status: 200, message: "Copy created successfully"})
 			//redirect
 			//res.redirect(config.root + "/books")
 		}
@@ -34,33 +34,32 @@ router.post('/', async function(req, res){
 })
 
 router.get('/:id', async function(req, res){
-    Book.findOne({_id: req.params.id}, async function(err, result) {
+    Copy.findOne({_id: req.params.id}, async function(err, result) {
     	if(err)
-    		res.status(404).json({status: 404, message: "Book not found"})
+    		res.status(404).json({status: 404, message: "Copy not found"})
     	else
     		res.send(result)
     })
 })
 
 router.post('/:id', async function(req, res){
-    Book.findOne({_id: req.params.id}, async function(err, result) {
+    Copy.findOne({_id: req.params.id}, async function(err, result) {
     	if(err)
-    		res.status(404).json({status: 404, message: "Book not found"})
+    		res.status(404).json({status: 404, message: "Copy not found"})
     	else{
     		update = {
-				title: req.body.title,
-				description: req.body.description,
-				author: req.body.author,
-				image: ""
+				isbn: req.body.isbn,
+				owner: req.body.owner,
+				price: req.body.price
 			}
-			Book.findOneAndUpdate({_id: result._id}, update, {new:true}, async function (err, book) {
+			Copy.findOneAndUpdate({_id: result._id}, update, {new:true}, async function (err, copy) {
 				if (err){
 					console.log(err);
 					res.status(500).json({status: 500, message: "Internal server error: " + err})
 				}
 				else{
-					console.log("Book "+book.title + " edited.");
-					res.status(200).json({status: 200, message: "Book edited successfully"})
+					console.log("Copy "+ copy.isbn + " edited.");
+					res.status(200).json({status: 200, message: "Copy edited successfully"})
 					//redirect
 					//res.redirect(config.root + "/books")
 				}
@@ -72,16 +71,16 @@ router.post('/:id', async function(req, res){
 router.post('/:id/purge', async function(req, res){
     Book.findOne({_id: req.params.id}, async function(err, result) {
     	if(err)
-    		res.status(404).json({message: "Book not found"})
+    		res.status(404).json({message: "Copy not found"})
     	else{
-			result.delete(async function (err, book) {
+			result.delete(async function (err, copy) {
 				if (err){
 					console.log(err);
 					res.status(500).json({status: 500, message: "Internal server error: " + err})
 				}
 				else{
-					console.log("Book "+book.title + " deleted.");
-					res.status(200).json({status: 200, message: "Book deleted successfully"})
+					console.log("Copy "+ copy.isbn + " deleted.");
+					res.status(200).json({status: 200, message: "Copy deleted successfully"})
 					//redirect
 					//res.redirect(config.root + "/books")
 				}

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Edit User</title>
+        <title>Edit Book</title>
     </head>
     <body>
         Sciao belo
@@ -10,7 +10,7 @@
             <label>Title: </label><input type="text" name="title" value='<%= book ? book.title : "" %>' required><br>
             <label>Description: </label><input type="text" name="description" value='<%= book ? book.description : "" %>' required><br>
             <label>Author: </label><input type="text" name="author" value='<%= book ? book.author : "" %>' required><br>
-            <label>Price: </label><input type="text" name="price" value='<%= book ? book.price : "" %>' required><br>
+            <label>Image: </label><input type="text" name="image" value='<%= book ? book.image : "" %>' required><br>
             <input type="submit" value="Submit">
         </form>
         <form action="/api/books/<%= book.id %>/purge" method="POST">
