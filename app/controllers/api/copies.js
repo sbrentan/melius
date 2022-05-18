@@ -12,7 +12,7 @@ router.get('/', async function(req, res){
 
 router.post('/', async function(req, res){
     var new_copy = new Copy({
-		isbn: req.body.isbn,
+		book: req.body.book,
 		owner: req.body.owner,
 		buyer: "",
 		price: req.body.price
@@ -25,7 +25,7 @@ router.post('/', async function(req, res){
 			res.status(500).json({status: 500, message: "Internal server error: " + err})
 		}
 		else{
-			console.log(copy.isbn + " saved to copy collection.");
+			console.log(copy.book + " saved to copy collection.");
 			res.status(200).json({status: 200, message: "Copy created successfully"})
 			//redirect
 			//res.redirect(config.root + "/books")
@@ -48,7 +48,7 @@ router.post('/:id', async function(req, res){
     		res.status(404).json({status: 404, message: "Copy not found"})
     	else{
     		update = {
-				isbn: req.body.isbn,
+				book: req.body.book,
 				owner: req.body.owner,
 				price: req.body.price
 			}
@@ -58,7 +58,7 @@ router.post('/:id', async function(req, res){
 					res.status(500).json({status: 500, message: "Internal server error: " + err})
 				}
 				else{
-					console.log("Copy "+ copy.isbn + " edited.");
+					console.log("Copy "+ copy.book + " edited.");
 					res.status(200).json({status: 200, message: "Copy edited successfully"})
 					//redirect
 					//res.redirect(config.root + "/books")
@@ -79,7 +79,7 @@ router.post('/:id/purge', async function(req, res){
 					res.status(500).json({status: 500, message: "Internal server error: " + err})
 				}
 				else{
-					console.log("Copy "+ copy.isbn + " deleted.");
+					console.log("Copy "+ copy.book + " deleted.");
 					res.status(200).json({status: 200, message: "Copy deleted successfully"})
 					//redirect
 					//res.redirect(config.root + "/books")

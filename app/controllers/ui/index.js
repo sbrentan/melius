@@ -7,6 +7,7 @@ app.get('/', function(req, res){
 
 app.use('/users', require('./users'));
 app.use('/books', require('./books'));
+app.use('/copies', require('./copies'));
 app.use('/', require('./auth'));
 
 module.exports = app

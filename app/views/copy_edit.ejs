@@ -7,13 +7,13 @@
         Sciao belo
         <br>
         <form action="/api/copies<%= copy ? '/'+copy._id : '' %>" method="POST">
-            <label>ISBN: </label><input type="text" name="isbn" value='<%= copy ? copy.isbn : "" %>' required><br>
+            <label>Book: </label><input type="text" name="book" value='<%= copy ? copy.book : "" %>' required><br>
             <label>Owner: </label><input type="text" name="owner" value='<%= copy ? copy.owner : "" %>' required><br>
             <label>Buyer: </label><input type="text" name="buyer" value='<%= copy ? copy.buyer : "" %>' required><br>
             <label>Price: </label><input type="text" name="price" value='<%= copy ? copy.price : "" %>' required><br>
             <input type="submit" value="Submit">
         </form>
-        <form action="/api/copies/<%= book.id %>/purge" method="POST">
+        <form action="/api/copies/<%= copy.id %>/purge" method="POST">
             <button>Purge</button>
         </form>
   </body>

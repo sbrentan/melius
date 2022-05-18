@@ -3,7 +3,7 @@ var Schema = mongoose.Schema;
 
 // set up a mongoose model
 module.exports = mongoose.model('Copy', new Schema({
-  isbn: String,
+  book: String,
   owner: String,
   buyer: String,
   price: String
