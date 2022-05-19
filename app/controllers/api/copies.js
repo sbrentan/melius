@@ -1,12 +1,13 @@
-var express = require('express');
-var router = express.Router();
-const Copy = require("../../models/copy")
+const express 	= require('express');
+const Copy 		= require("../../models/copy")
+const router	= express.Router();
 
 router.get('/', async function(req, res){
-    Copy.find({}, async function(err, result) {
+    Copy.find({}, async function(err, copies) {
     	if(err)
-    	res.writeHead(200, { "Content-Type": "text/json"})
-    	res.send(result)
+            res.status(500).json({status: 500, message: "Internal server error:" + err})
+        else
+            res.send(copies);
     })
 })
 
@@ -19,7 +20,7 @@ router.post('/', async function(req, res){
 	});
 
 	// Save the new model instance, passing a callback
-	result = await new_copy.save(async function (err, copy) {
+	new_copy.save(async function (err, copy) {
 		if (err){
 			console.log(err);
 			res.status(500).json({status: 500, message: "Internal server error: " + err})
@@ -27,53 +28,55 @@ router.post('/', async function(req, res){
 		else{
 			console.log(copy.book + " saved to copy collection.");
 			res.status(200).json({status: 200, message: "Copy created successfully"})
-			//redirect
-			//res.redirect(config.root + "/books")
 		}
 	});
 })
 
 router.get('/:id', async function(req, res){
-    Copy.findOne({_id: req.params.id}, async function(err, result) {
+    Copy.findOne({_id: req.params.id}, async function(err, copy) {
     	if(err)
-    		res.status(404).json({status: 404, message: "Copy not found"})
-    	else
-    		res.send(result)
+			res.status(500).json({status: 500, message: "Internal server error: " + err})
+		else if(!copy)
+			res.status(404).json({status: 404, message: "Copy not found"})
+		else
+    		res.send(copy)
     })
 })
 
-router.post('/:id', async function(req, res){
-    Copy.findOne({_id: req.params.id}, async function(err, result) {
+router.put('/:id', auth, async function(req, res){
+    Copy.findOne({_id: req.params.id}, async function(err, copy) {
     	if(err)
-    		res.status(404).json({status: 404, message: "Copy not found"})
-    	else{
+			res.status(500).json({status: 500, message: "Internal server error: " + err})
+		else if(!copy)
+			res.status(404).json({status: 404, message: "Copy not found"})
+		else{
     		update = {
 				book: req.body.book,
 				owner: req.body.owner,
 				price: req.body.price
 			}
-			Copy.findOneAndUpdate({_id: result._id}, update, {new:true}, async function (err, copy) {
+			Copy.findOneAndUpdate({_id: copy._id}, update, {new:true}, async function (err, result) {
 				if (err){
 					console.log(err);
 					res.status(500).json({status: 500, message: "Internal server error: " + err})
 				}
 				else{
-					console.log("Copy "+ copy.book + " edited.");
+					console.log("Copy "+ result._id + " edited.");
 					res.status(200).json({status: 200, message: "Copy edited successfully"})
-					//redirect
-					//res.redirect(config.root + "/books")
 				}
 			})
     	}
     })
 })
 
-router.post('/:id/purge', async function(req, res){
-    Book.findOne({_id: req.params.id}, async function(err, result) {
+router.delete('/:id', auth, async function(req, res){
+    Copy.findOne({_id: req.params.id}, async function(err, copy) {
     	if(err)
-    		res.status(404).json({message: "Copy not found"})
-    	else{
-			result.delete(async function (err, copy) {
+			res.status(500).json({status: 500, message: "Internal server error: " + err})
+		else if(!copy)
+			res.status(404).json({status: 404, message: "Copy not found"})
+		else{
+			copy.delete(async function (err, copy) {
 				if (err){
 					console.log(err);
 					res.status(500).json({status: 500, message: "Internal server error: " + err})
@@ -81,8 +84,6 @@ router.post('/:id/purge', async function(req, res){
 				else{
 					console.log("Copy "+ copy.book + " deleted.");
 					res.status(200).json({status: 200, message: "Copy deleted successfully"})
-					//redirect
-					//res.redirect(config.root + "/books")
 				}
 			})
     	}
