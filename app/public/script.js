@@ -67,7 +67,7 @@ function insertBook(_url)
     var _author = document.getElementsByName("author")[0].value;
     console.log(_title);
 
-    var url = '../../api/books';
+    var url = '../../api/books/';
     var meth = 'POST';
     if(_url != ""){
         url = url + _url;
@@ -82,18 +82,21 @@ function insertBook(_url)
     })
     .then((resp) => {
         console.log(resp);
-        if(_url != "")
-            window.alert('Succesfully Edited');
-        else
-            window.alert('Succesfully Inserted');
-        window.location.href = "../../ui/books";
-        return;
+        if(resp.status==200){
+            if(_url != "")
+                window.alert('Succesfully Edited');
+            else
+                window.alert('Succesfully Inserted');
+            window.location.href = "../../ui/books";
+            return;
+        }else{
+            window.alert('Error '+resp.status); 
+        }
     })
     .catch( error => console.error(error) );
 
 };
-function purgeBook(_url)
-{
+function purgeBook(_url){
     //get the book title
     var url = "/api/books/"+_url;
 
@@ -103,10 +106,14 @@ function purgeBook(_url)
         method: 'DELETE',
     })
     .then((resp) => {
-        console.log(resp);
-        window.alert('Succesfully Deleted');
-        window.location.href = "../../ui/books";
-        return;
+        if(resp.status==200){
+            console.log(resp);
+            window.alert('Succesfully Deleted');
+            window.location.href = "../../ui/books";
+            return;
+        }else{
+            window.alert('Error '+resp.status); 
+        }
     })
     .catch( error => console.error(error) );
 };
@@ -127,16 +134,17 @@ function reserveBook(_bookid)
         body: JSON.stringify( { book: _bookid } ),
     })
     .then((resp) => {
-        console.log(resp);
-        return;
+        if(resp.status==200){
+            console.log(resp);
+            return;
+        }else{
+            window.alert('Error '+resp.status); 
+        }
     })
     .catch( error => console.error(error) );
 
 };
-
-
-function signin()
-{
+function signin(){
     var status;
     var name = document.getElementById("name").value;
     var email = document.getElementById("email").value;
@@ -158,9 +166,7 @@ function signin()
         return;
     })
     .catch( error => console.error(error) ); // If there is any error you will catch them here
-
 };
-
 function logout(){
     var status;
     if(getCookie("userCookie") == null) return;
@@ -179,7 +185,6 @@ function logout(){
     .catch( error => console.error(error) ); // If there is any error you will catch them here
     location.reload();
 }
-
 function getProfile() {
     var status;
     var id = getCookie("userCookie").id.toString();
@@ -201,7 +206,6 @@ function getProfile() {
     })
     .catch( error => console.error(error) ); // If there is any error you will catch them here
 }
-
 function getReservations() {
     var status;
     var id = getCookie("userCookie").id.toString();
@@ -216,14 +220,15 @@ function getReservations() {
     .then(function(data) {
         
         if(status == 200){
-            console.log(data)
-            //document.getElementById("reservations").innerHTML+="<p>"+ data.email +"</p><p>"+ data.name +"</p><p>"+ data.password +"</p><p>"+ data._id +"</p>";
+            console.log(data);
+            for(var i = 0;i<data.length;i++){
+                document.getElementById("reservations").innerHTML+="<div class='reservationdiv'><p>Book:"+ data[i].book +"</p><p>Copy:"+ data[i].copy +"</p><p>User:"+ data[i].user +"</p><p>ResId:"+ data[i]._id +"</p></div>";
+            }
         }
         return;
     })
     .catch( error => console.error(error) ); // If there is any error you will catch them here
 }
-
 function setCookie(cname, cvalue) {
     const d = new Date();
     d.setTime(d.getTime() + 24*60*60*1000); //one day
@@ -250,7 +255,6 @@ function getCookie(cname) {
     // Return null if not found
     return null;
 }
-
 function deleteCookie(cname){
     document.cookie = cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
@@ -261,3 +265,61 @@ function setheader() {
         document.getElementById("logoutdiv").style.display = "None";
     }
 }
+function insertCopy(_url)
+{
+    //get the book title
+    var _book = document.getElementsByName("book")[0].value;
+    var _owner = document.getElementsByName("owner")[0].value;
+    var _buyer = document.getElementsByName("buyer")[0].value;
+    var _price = document.getElementsByName("price")[0].value;
+
+    var url = '../../api/copies/'+_url;
+    var meth = 'POST';
+    if(_url != ""){
+        url = url + _url;
+        meth = 'PUT';
+    }
+    console.log(url);
+
+    fetch(url+ "?token="+getCookie("userCookie").token , {
+        method: meth,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify( { book: _book, owner: _owner, buyer: _buyer , price: _price } ),
+    })
+    .then((resp) => {
+        if(resp.status==200){
+            console.log(resp);
+            if(_url != "")
+                window.alert('Succesfully Edited');
+            else
+                window.alert('Succesfully Inserted');
+            window.location.href = "../../ui/copies";
+            return;
+        }else{
+            window.alert('Error '+resp.status); 
+        }
+    })
+    .catch( error => console.error(error) );
+
+};
+function purgeCopy(_url){
+    //get the book title
+    var url = "/api/copies/"+_url;
+
+    console.log(url);
+
+    fetch(url+ "?token="+getCookie("userCookie").token , {
+        method: 'DELETE',
+    })
+    .then((resp) => {
+        if(resp.status==200){
+            console.log(resp);
+            window.alert('Succesfully Deleted');
+            window.location.href = "../../ui/copies";
+            return;
+        }else{
+            window.alert('Error '+resp.status); 
+        }
+    })
+    .catch( error => console.error(error) );
+};
