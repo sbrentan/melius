@@ -7,12 +7,22 @@ const Reservation 	= require("../../models/reservation")
 const router 		= express.Router();
 
 router.get('/', async function(req, res){
-    Book.find({}, async function(err, books) {
-    	if(err)
-            res.status(500).json({status: 500, message: "Internal server error:" + err})
-        else
-            res.send(books);
-    })
+	name_filter = ""
+	if(req.query && req.query.name)
+		name_filter = req.query.name
+	
+	object_filter = [
+		{ "title": { "$regex": name_filter, "$options": "i" } },
+		{ "author": { "$regex": name_filter, "$options": "i" } },
+		{ "description": { "$regex": name_filter, "$options": "i" } }]
+
+	Book.find({}).or(object_filter)
+	    .then(books => {
+	    	res.send(books);
+	    })
+	    .catch(error => {
+	    	res.status(500).json({status: 500, message: "Internal server error: " + error}) 
+	    })
 })
 
 router.post('/', auth, is_admin, async function(req, res){

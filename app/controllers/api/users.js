@@ -126,31 +126,31 @@ router.post('/:id/reservations', auth, is_logged_user, async function(req, res) 
             else if(!book)
                 res.status(404).json({status: 404, message: "Book not found"})
             else {
-                Copy.findOne({book: book._id}, async function(err, copy){
-                    if(err)
-                        res.status(500).json({status: 500, message: "Internal server error:" + err})
-                    else if(!copy)
-                        res.status(404).json({status: 404, message: "No copies available for this book"})
-                    else {
-                        reservation = new Reservation({
-                            user: req.user.id,
-                            book: book._id,
-                            copy: ""
-                        })
-                        reservation.save(async function(err, reservation){
-                            if (err){
-                                console.log(err);
-                                res.status(500).json({status: 500, message: "Internal server error: " + err})
-                            }
-                            else{
-                                console.log(book.title + " reserved by " + req.user.email);
-                                res.status(200).json({status: 200, message: "Book reserved successfully"})
-                                //redirect
-                                //res.redirect(config.root + "/books")
-                            }
-                        })
-                    }
-                })
+
+                copies_found = await Copy.find({book: book._id, buyer: ""}).count()
+                reserv_found = await Reservation.find({book: book._id, copy: ""}).count()
+
+                console.log(copies_found)
+                console.log(reserv_found)
+
+                if(copies_found - reserv_found > 0){
+                    reservation = new Reservation({
+                        user: req.user.id,
+                        book: book._id,
+                        copy: ""
+                    })
+                    reservation.save(async function(err, reservation){
+                        if (err){
+                            console.log(err);
+                            res.status(500).json({status: 500, message: "Internal server error: " + err})
+                        }
+                        else{
+                            console.log(book.title + " reserved by " + req.user.email);
+                            res.status(200).json({status: 200, message: "Book reserved successfully"})
+                        }
+                    })
+                } else
+                    res.status(404).json({status: 404, message: "No copies available for this book"})
             }
         })
     }

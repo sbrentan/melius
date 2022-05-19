@@ -1,0 +1,23 @@
+- Remove copies/contact us from navbar and add sign-up instead
+- remove "new book" from collection
+- in book details remove "make a reservation" when not logged
+- check if documentation is correct
+- fill "Home" with random stuff
+- profile: change colors, change id printing in reservations
+- do something when reserved a book(alert or whatever)
+- ajax response handling error control(login)
+- "insert book" button remove when not admin
+
+- finish wiki
+
+- heroku deployment and basic data upload
+
+
+
+
+################## SPRINT 2
+
+- API change callbacks into promises .then e .catch
+- add "end()" to all methods to avoid random app crashes?
+- on new copy add select tag
+- add "Accept reservation" on dashboard: remember to change both fields in copy and reservation
