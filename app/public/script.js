@@ -177,6 +177,7 @@ function logout(){
         return;
     })
     .catch( error => console.error(error) ); // If there is any error you will catch them here
+    location.reload();
 }
 
 function getProfile() {
@@ -193,7 +194,30 @@ function getProfile() {
     .then(function(data) {
         
         if(status == 200){
-            document.getElementById("profileInfo").innerHTML+="<p>"+ data.email +"</p><p>"+ data.name +"</p><p>"+ data.password +"</p><p>"+ data._id +"</p>";
+            document.getElementById("profileInfo").innerHTML+="<p>"+ data.email +"</p><p>"+ data.name +"</p>";
+        }
+        getReservations();
+        return;
+    })
+    .catch( error => console.error(error) ); // If there is any error you will catch them here
+}
+
+function getReservations() {
+    var status;
+    var id = getCookie("userCookie").id.toString();
+
+    if (id == null) return;
+
+    fetch('/api/users/'+ id + "/reservations?token="+getCookie("userCookie").token , {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+    })
+    .then((resp) => {console.log(resp);status = resp.status; return resp.json() })
+    .then(function(data) {
+        
+        if(status == 200){
+            console.log(data)
+            //document.getElementById("reservations").innerHTML+="<p>"+ data.email +"</p><p>"+ data.name +"</p><p>"+ data.password +"</p><p>"+ data._id +"</p>";
         }
         return;
     })
@@ -232,9 +256,8 @@ function deleteCookie(cname){
 }
 function setheader() {
     if(getCookie("userCookie") != null){
-        document.getElementById("loggerdiv").innerHTML="logged";
+        document.getElementById("logindiv").style.display = "None";
     }else{
-        document.getElementById("loggerdiv").innerHTML="nonlogged";
-
+        document.getElementById("logoutdiv").style.display = "None";
     }
 }
