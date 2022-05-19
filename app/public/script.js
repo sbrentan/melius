@@ -54,3 +54,75 @@ function login()
     .catch( error => console.error(error) ); // If there is any error you will catch them here
 
 };
+function insertBook(_url)
+{
+    //get the book title
+    var _title = document.getElementsByName("title")[0].value;
+    var _description = document.getElementsByName("description")[0].value;
+    var _author = document.getElementsByName("author")[0].value;
+    console.log(_title);
+
+    var url = '../../api/books';
+    var meth = 'POST';
+    if(_url != null){
+        url = url + _url;
+        meth = 'PUT';
+    }
+    console.log(url);
+
+    fetch(url, {
+        method: meth,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify( { title: _title, description: _description, author: _author } ),
+    })
+    .then((resp) => {
+        console.log(resp);
+        if(_url != null)
+            window.alert('Succesfully Edited');
+        else
+            window.alert('Succesfully Inserted');
+        window.location.href = "../../ui/books";
+        return;
+    })
+    .catch( error => console.error(error) );
+
+};
+function purgeBook(_url)
+{
+    //get the book title
+    var url = "/api/books/"+_url;
+
+    console.log(url);
+
+    fetch(url, {
+        method: 'DELETE',
+    })
+    .then((resp) => {
+        console.log(resp);
+        window.alert('Succesfully Deleted');
+        window.location.href = "../../ui/books";
+        return;
+    })
+    .catch( error => console.error(error) );
+};
+function reserveBook(_bookid)
+{
+    var userid = "6285fd041384bc896a7278e9";
+    //get the book title
+    var url = '../../api/users/'+userid+'/reservations';
+
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify( { book: _bookid } ),
+    })
+    .then((resp) => {
+        console.log(resp);
+        window.alert('Succesfully Reserved');
+        window.location.href = "../../ui/books";
+        return;
+    })
+    .catch( error => console.error(error) );
+
+};
