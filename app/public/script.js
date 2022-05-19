@@ -4,7 +4,7 @@ function getUsers(){
     .then((resp) => resp.json()) // Transform the data into json
     .then(function(data) { // Here you get the data to modify as you please
         
-        console.log(data);
+        ;
         
         return data.map(function(user) {
             
@@ -20,7 +20,7 @@ function getUser(){
     .then((resp) => resp.json()) // Transform the data into json
     .then(function(data) { // Here you get the data to modify as you please
         
-        console.log(data);
+        ;
         
         return data.map(function(user) {
             
@@ -47,8 +47,8 @@ function login(email, password)
     })
     .then((resp) => {status = resp.status; return resp.json() })
     .then(function(data) {
-        console.log(status)
-        console.log(data)
+        
+        
         if(status == 200){                          
             setCookie("userCookie", { token: data.token, email: data.email, name: data.name, id: data.id})
             console.log("userCookie created")
@@ -163,14 +163,12 @@ function logout(){
     var status;
     if(getCookie("userCookie") == null) return;
 
-    fetch('/api/logout/?token='+getCookie("userCookie").token, {
+    fetch('/api/logout?token='+getCookie("userCookie").token, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        //body: JSON.stringify({ token: getCookie("userCookie").token })
     })
     .then((resp) => {status = resp.status; return resp.json() })
     .then(function(data) {
-        console.log(data)
         
         if(status == 200)
             deleteCookie("userCookie")
@@ -185,16 +183,16 @@ function getProfile() {
 
     if (id == null) return;
 
-    fetch('/api/users/'+ id, {
+    fetch('/api/users/'+ id + "?token="+getCookie("userCookie").token , {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: getCookie("userCookie").token })
     })
     .then((resp) => {console.log(resp);status = resp.status; return resp.json() })
     .then(function(data) {
-        console.log(data)
-        if(status == 200)
-            console.log(data)
+        
+        if(status == 200){
+            document.getElementById("profileInfo").innerHTML+="<p>"+ data.email +"</p><p>"+ data.name +"</p><p>"+ data.password +"</p><p>"+ data._id +"</p>";
+        }
         return;
     })
     .catch( error => console.error(error) ); // If there is any error you will catch them here
