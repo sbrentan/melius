@@ -24,7 +24,8 @@ router.post('/', async function(req, res) {
     var user = new User({
         name: req.body.name,
         email: req.body.email,
-        password: md5(req.body.password)
+        password: md5(req.body.password),
+        role: "user"
     });
     
     //attende finchè non finisce il save nel db
