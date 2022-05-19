@@ -110,22 +110,24 @@ function purgeBook(_url)
     })
     .catch( error => console.error(error) );
 };
+
 function reserveBook(_bookid)
 {
-    var userid = "6285fd041384bc896a7278e9";
+    var cookie = getCookie("userCookie");
+    if(cookie == null) { alert("no"); return; }
+    
     //get the book title
-    var url = '../../api/users/'+userid+'/reservations';
+    console.log(cookie.id)
+    var url = '../../api/users/'+ cookie.id +'/reservations';
 
 
-    fetch(url+ "?token="+getCookie("userCookie").token , {
+    fetch(url + "?token=" + cookie.token , {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify( { book: _bookid } ),
     })
     .then((resp) => {
         console.log(resp);
-        window.alert('Succesfully Reserved');
-        window.location.href = "../../ui/books";
         return;
     })
     .catch( error => console.error(error) );

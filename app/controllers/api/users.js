@@ -5,6 +5,8 @@ const auth            = require("../../middlewares/auth")
 const is_logged_user  = require("../../middlewares/is_logged_user")
 const is_admin        = require("../../middlewares/is_admin")
 const User            = require("../../models/user")
+const Book            = require("../../models/book")
+const Copy            = require("../../models/copy")
 const Reservation     = require("../../models/reservation")
 const router          = express.Router();
 
