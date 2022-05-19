@@ -3,19 +3,18 @@ var router = express.Router();
 var config = require('../../config')
 const User = require("../../models/user")
 var md5 = require("md5")
+const auth = require("../../middlewares/auth")
 var jwt = require('jsonwebtoken')
 
 //login 
 router.post("/login", async function(req, res) {
 
-
-    
     var user = new User({
         email: req.body.email,
         password: md5(req.body.password)
     });
     
-    User.find({email: user.email, password: user.password}, async function(err, result){ 
+    User.findOne({email: user.email, password: user.password}, async function(err, result){ 
         console.log(user.email, user.password)
         
         if(err){
@@ -39,20 +38,22 @@ router.post("/login", async function(req, res) {
             
             req.session.tokens = (req.session.tokens || [])
             req.session.tokens.push({id: result._id, token: token, email: user.email})
-            
+
             res.json({
-                status: 200,
         		token: token,
         		email: user.email,
-                name: result.name
+                name: result.name,
+                id: result._id
         	});
         }
     })
 });
-
-router.post("/logout", async function(req, res) {
+//req.params.id
+router.post("/logout", auth, async function(req, res) {
     if(!req.body.token)
         res.status(400).json({status: 400, message: "No token provided"});
+    else if(!req.session.tokens)
+        res.status(400).json({status: 400, message: "No session found"});
     else{
         for(i = 0; i < req.session.tokens.length; i++){
             if(req.session.tokens[i].token == req.body.token){
