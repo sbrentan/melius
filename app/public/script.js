@@ -30,3 +30,27 @@ function getUser(){
     })
     .catch( error => console.error(error) );
 }
+
+function login()
+{
+    var email = document.getElementById("email").value;
+    var password = document.getElementById("password").value;
+    var status;
+
+    fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, password: password })
+    })
+    .then((resp) => resp.json())
+    .then(function(data) {
+        
+        if(data.status == 200){                          
+            document.cookie = "username=John Doe; expires=Thu, 18 Dec 2013 12:00:00 UTC";
+            console.log("cookie created")
+        }
+        return;
+    })
+    .catch( error => console.error(error) ); // If there is any error you will catch them here
+
+};

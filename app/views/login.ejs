@@ -2,16 +2,15 @@
 <html>
 	<head>
 		<title>Login</title>
+        <script src="/public/script.js" type="text/javascript"></script>
 	</head>
 	<body>
         <center>
             <!-- change /api/users into /ui/users + ajax -->
 			<h2>Login</h2>
-            <form action="/api/login" method="POST">
-                Email: <input type="email" name="email" required><br>
-                Password: <input type="password" name="password" required><br>
-                <input type="submit" value="Submit">
-            </form>
+                Email: <input type="email" id="email" required><br>
+                Password: <input type="password" id="password" required><br>
+                <button type="button" onclick="login()">submit</button>
         </center>
 	</body>
 </html>

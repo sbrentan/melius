@@ -6,17 +6,25 @@ var md5 = require("md5")
 var jwt = require('jsonwebtoken')
 
 //login 
-router.post("/login", async function(req, res) { 
+router.post("/login", async function(req, res) {
+
+
     
     var user = new User({
         email: req.body.email,
         password: md5(req.body.password)
     });
     
-    User.findOne({email: user.email, password: user.password}, async function(err, result){
+    User.find({email: user.email, password: user.password}, async function(err, result){ 
+        console.log(user.email, user.password)
+        
         if(err){
             console.log("Authentication failed");
             res.status(500).json({status: 500, message: "Authentication failed"});
+        }
+        else if(result.length == 0){
+            console.log("Unauthorized");
+            res.status(401).json({status: 401, message: "Unauthorized"});
         } else {
             var payload = {
         		email: user.email,
@@ -33,9 +41,10 @@ router.post("/login", async function(req, res) {
             req.session.tokens.push({id: result._id, token: token, email: user.email})
             
             res.json({
-        		success: true,
+                status: 200,
         		token: token,
-        		email: user.email
+        		email: user.email,
+                name: result.name
         	});
         }
     })
