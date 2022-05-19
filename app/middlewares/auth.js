@@ -1,5 +1,3 @@
-
-
 module.exports = function(req, res, next) {
     req.logged = false
     console.log(req.query)
@@ -11,6 +9,7 @@ module.exports = function(req, res, next) {
                 req.user = {}
                 req.user.id = req.session.tokens[i].id
                 req.user.email = req.session.tokens[i].email
+                req.user.role = req.session.tokens[i].role
                 req.logged = true
                 next()
                 return

@@ -32,8 +32,6 @@ router.post('/', auth, is_admin, async function(req, res){
 		else{
 			console.log(book.title + " saved to book collection.");
 			res.status(200).json({status: 200, message: "Book created successfully"})
-			//redirect
-			//res.redirect(config.root + "/books")
 		}
 	});
 })
@@ -70,8 +68,6 @@ router.put('/:id', auth, is_admin, async function(req, res){
 				else{
 					console.log("Book "+result.title + " edited.");
 					res.status(200).json({status: 200, message: "Book edited successfully"})
-					//redirect
-					//res.redirect(config.root + "/books")
 				}
 			})
     	}
@@ -93,8 +89,6 @@ router.delete('/:id', auth, is_admin, async function(req, res){
 				else{
 					console.log("Book "+book.title + " deleted.");
 					res.status(200).json({status: 200, message: "Book deleted successfully"})
-					//redirect
-					//res.redirect(config.root + "/books")
 				}
 			})
     	}

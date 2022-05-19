@@ -14,14 +14,12 @@ router.post("/login", async function(req, res) {
         password: md5(req.body.password)
     });
     
-    User.findOne({email: user.email, password: user.password}, async function(err, result){ 
-        console.log(user.email, user.password)
-        
+    User.findOne({email: user.email, password: user.password}, async function(err, result){
         if(err){
             console.log("Authentication failed");
             res.status(500).json({status: 500, message: "Authentication failed"});
         }
-        else if(result.length == 0){
+        else if(!result || result.length == 0){
             console.log("Unauthorized");
             res.status(401).json({status: 401, message: "Unauthorized"});
         } else {
@@ -37,13 +35,18 @@ router.post("/login", async function(req, res) {
         	var token = jwt.sign(payload, "ultramegasupersecretkey", options);
             
             req.session.tokens = (req.session.tokens || [])
-            req.session.tokens.push({id: result._id, token: token, email: user.email})
+            req.session.tokens.push({
+                id: result._id,
+                token: token,
+                email: result.email,
+                role: result.role
+            })
 
             res.json({
         		token: token,
+                id: result._id,
         		email: user.email,
-                name: result.name,
-                id: result._id
+                name: result.name
         	});
         }
     })
