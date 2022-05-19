@@ -3,9 +3,7 @@ function getUsers(){
     fetch('/api/users')
     .then((resp) => resp.json()) // Transform the data into json
     .then(function(data) { // Here you get the data to modify as you please
-        
-        ;
-        
+
         return data.map(function(user) {
             
             var container = document.getElementById('userContainer');
@@ -15,24 +13,16 @@ function getUsers(){
     .catch( error => console.error(error) );
 }
 
-function getUser(){
-    fetch('/api/users')
+function getUser(userId){
+    fetch('/api/users/'+userId)
     .then((resp) => resp.json()) // Transform the data into json
     .then(function(data) { // Here you get the data to modify as you please
-        
-        ;
-        
-        return data.map(function(user) {
-            
-            var container = document.getElementById('userContainer');
-            container.innerHTML += `<a href="/ui/users/${user._id}/profile">${user.name}</a><br>`;
-        })
+        return data;
     })
     .catch( error => console.error(error) );
 }
 
-function login(email, password)
-{
+function login(email, password){
     var status;
     if(email == undefined || password == undefined){
         email = document.getElementById("email").value;
@@ -59,8 +49,8 @@ function login(email, password)
     .catch( error => console.error(error) ); // If there is any error you will catch them here
 
 };
-function insertBook(_url)
-{
+
+function insertBook(_url){
     //get the book title
     var _title = document.getElementsByName("title")[0].value;
     var _description = document.getElementsByName("description")[0].value;
@@ -96,6 +86,55 @@ function insertBook(_url)
     .catch( error => console.error(error) );
 
 };
+
+function getBook(bookId, callback){
+    fetch('/api/books/'+ bookId)
+    .then((resp) => resp.json()) // Transform the data into json
+    .then(function(data) {
+        callback(data);
+    })
+    .catch( error => console.error(error) );
+}
+
+function getBooks(filtered){
+    
+    if(filtered)
+        url = '/api/books?name=' + document.getElementById('filter').value;
+    else
+        url = '/api/books'
+    
+    fetch(url)
+    .then((resp) => resp.json()) // Transform the data into json
+    .then(function(data) { // Here you get the data to modify as you please
+        
+        var container = document.getElementById('bookContainer');
+        container.innerHTML = ""
+        
+        return data.map(function(book) {
+            container.innerHTML += `<a class='book' href="/ui/books/${book._id}"><p>${book.title}</p><br>${book.author}</a>`;
+        })
+    })
+    .catch( error => console.error(error) );
+}
+
+function getCopies(){
+
+    fetch("/api/copies")
+    .then((resp) => resp.json()) // Transform the data into json
+    .then(function(data) { // Here you get the data to modify as you please
+        
+        var container = document.getElementById('copiesContainer');
+        container.innerHTML = ""
+        
+        return data.map(function(copy) {
+            getBook(copy.book, function(tmp){
+                container.innerHTML += `<a href="/ui/copies/${copy._id}">${tmp.title}</a><br>`;
+            });
+        })
+    })
+    .catch( error => console.error(error) );
+}
+
 function purgeBook(_url){
     //get the book title
     var url = "/api/books/"+_url;
@@ -118,8 +157,7 @@ function purgeBook(_url){
     .catch( error => console.error(error) );
 };
 
-function reserveBook(_bookid)
-{
+function reserveBook(_bookid){
     var cookie = getCookie("userCookie");
     if(cookie == null) { alert("no"); return; }
     
@@ -144,6 +182,7 @@ function reserveBook(_bookid)
     .catch( error => console.error(error) );
 
 };
+
 function signin(){
     var status;
     var name = document.getElementById("name").value;
@@ -167,6 +206,7 @@ function signin(){
     })
     .catch( error => console.error(error) ); // If there is any error you will catch them here
 };
+
 function logout(){
     var status;
     if(getCookie("userCookie") == null) return;
@@ -185,7 +225,9 @@ function logout(){
     .catch( error => console.error(error) ); // If there is any error you will catch them here
     location.reload();
 }
+
 function getProfile() {
+    
     var status;
     var id = getCookie("userCookie").id.toString();
 
@@ -206,6 +248,7 @@ function getProfile() {
     })
     .catch( error => console.error(error) ); // If there is any error you will catch them here
 }
+
 function getReservations() {
     var status;
     var id = getCookie("userCookie").id.toString();
@@ -222,13 +265,16 @@ function getReservations() {
         if(status == 200){
             console.log(data);
             for(var i = 0;i<data.length;i++){
-                document.getElementById("reservations").innerHTML+="<div class='reservationdiv'><p>Book:"+ data[i].book +"</p><p>Copy:"+ data[i].copy +"</p><p>User:"+ data[i].user +"</p><p>ResId:"+ data[i]._id +"</p></div>";
+                getBook(data[i].book, function(book){
+                    document.getElementById("reservations").innerHTML+="<div class='reservationdiv'><p>"+ book.title +"</p></div>";
+                })
             }
         }
         return;
     })
     .catch( error => console.error(error) ); // If there is any error you will catch them here
 }
+
 function setCookie(cname, cvalue) {
     const d = new Date();
     d.setTime(d.getTime() + 24*60*60*1000); //one day
@@ -255,9 +301,11 @@ function getCookie(cname) {
     // Return null if not found
     return null;
 }
+
 function deleteCookie(cname){
     document.cookie = cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
+
 function setheader() {
     if(getCookie("userCookie") != null){
         document.getElementById("logindiv").style.display = "None";
@@ -272,8 +320,7 @@ function setheader() {
     }
 }
 
-function insertCopy(_url)
-{
+function insertCopy(_url){
     //get the book title
     var _book = document.getElementsByName("book")[0].value;
     var _owner = document.getElementsByName("owner")[0].value;
@@ -309,6 +356,7 @@ function insertCopy(_url)
     .catch( error => console.error(error) );
 
 };
+
 function purgeCopy(_url){
     //get the book title
     var url = "/api/copies/"+_url;

@@ -3,9 +3,7 @@ var router = express.Router();
 const Copy = require("../../models/copy")
 
 router.get("/", async function(req, res) {
-    Copy.find({}, function(err, result) {
-        res.render('copies', {copies: result});
-    })
+    res.render('copies');
 })
 
 router.get('/new', async function(req, res) {

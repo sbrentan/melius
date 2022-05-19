@@ -1,10 +1,14 @@
 <%- include('common/header.ejs') %>
 		<title>Books</title>
 	</head>
-	<body onload="setheader();">
-		<br>
-		<% for(i=0; i < books.length; i++) { %>
-		<a href="/ui/books/<%= books[i]._id %>"><%= books[i].title %></a>  <br><% } %>
+	<body onload="getBooks(false); setheader();">
+		<b>Filtro nome: </b><input type="text" id="filter"> 
+		<button type="button" onclick="getBooks(true)">Filtra</button>
+		<br><br>
+		
+		<div id="bookContainer">
+			
+		</div>
 		<br><a href="/ui/books/new" name="adminonly">New book</a>
 	</body>
 </html>

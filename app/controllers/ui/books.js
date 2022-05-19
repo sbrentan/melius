@@ -4,9 +4,7 @@ var config = require('../../config')
 const Book = require("../../models/book")
 
 router.get("/", async function(req, res) {
-    Book.find({}, function(err, result) {
-        res.render('books', {books: result});
-    })
+    res.render('books');
 })
 
 router.get('/new', async function(req, res) {

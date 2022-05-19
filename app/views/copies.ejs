@@ -1,10 +1,11 @@
 <%- include('common/header.ejs') %>
 		<title>Copies</title>
 	</head>
-	<body onload="setheader()">
+	<body onload="getCopies(); setheader()">
 		<br>
-		<% for(i=0; i < copies.length; i++) { %>
-		<a href="/ui/copies/<%= copies[i]._id %>"><%= copies[i].book %></a>  <br><% } %>
+		<div id="copiesContainer">
+			
+		</div>
 		<br><a name="adminonly" href="/ui/copies/new">New copy</a>
 	</body>
 </html>

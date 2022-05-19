@@ -109,7 +109,7 @@ router.get("/:id/reservations", auth, is_logged_user, async function(req, res) {
         else if(!user)
             res.status(404).json({status: 404, message: "User not found"})
         else {
-            Reservation.find({user: user._id}, async function(err, reservations) {
+            Reservation.find({user: user._id}, function(err, reservations) {
                 res.send(reservations)
             })
         }
