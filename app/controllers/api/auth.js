@@ -50,13 +50,13 @@ router.post("/login", async function(req, res) {
 });
 //req.params.id
 router.post("/logout", auth, async function(req, res) {
-    if(!req.body.token)
+    if(!req.query.token)
         res.status(400).json({status: 400, message: "No token provided"});
     else if(!req.session.tokens)
         res.status(400).json({status: 400, message: "No session found"});
     else{
         for(i = 0; i < req.session.tokens.length; i++){
-            if(req.session.tokens[i].token == req.body.token){
+            if(req.session.tokens[i].token == req.query.token){
                 req.session.tokens.splice(i, 1);
                 res.status(200).json({status: 200, message: "User logged out"});
                 return;

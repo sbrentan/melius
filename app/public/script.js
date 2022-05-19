@@ -163,7 +163,7 @@ function logout(){
     var status;
     if(getCookie("userCookie") == null) return;
 
-    fetch('/api/logout', {
+    fetch('/api/logout/?token='+getCookie("userCookie").token, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         //body: JSON.stringify({ token: getCookie("userCookie").token })
