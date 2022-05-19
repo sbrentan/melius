@@ -69,7 +69,7 @@ function insertBook(_url)
 
     var url = '../../api/books';
     var meth = 'POST';
-    if(_url != null){
+    if(_url != ""){
         url = url + _url;
         meth = 'PUT';
     }
@@ -82,7 +82,7 @@ function insertBook(_url)
     })
     .then((resp) => {
         console.log(resp);
-        if(_url != null)
+        if(_url != "")
             window.alert('Succesfully Edited');
         else
             window.alert('Succesfully Inserted');
@@ -229,4 +229,12 @@ function getCookie(cname) {
 
 function deleteCookie(cname){
     document.cookie = cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+}
+function setheader() {
+    if(getCookie("userCookie").id != null){
+        document.getElementById("loggerdiv").innerHTML="logged";
+    }else{
+        document.getElementById("loggerdiv").innerHTML="nonlogged";
+
+    }
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html >
 	<head>
 		<link rel="stylesheet" href="../../public/style.css">
         <script src="/public/script.js" type="text/javascript"></script>
@@ -8,10 +8,10 @@
 			<div><a href="/ui">Home</a></div>
 			<div><a href="/ui/books">Book Collection</a></div>
 			<div><a href="/ui/contacts">Contact Us</a></div>
-			<div>Login</div>
+			<div id="loggerdiv"></div>
 		</div>
 	</head>
-    <body>
+    <body onload="setheader()">
         <h1>Home</h1>
         <button type="button" onclick="logout()">Logout</button>
     </body>
