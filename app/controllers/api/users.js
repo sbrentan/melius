@@ -1,4 +1,3 @@
-const config = require('../../config')
 const md5 = require("md5")
 const auth = require("../../middlewares/auth")
 const is_logged_user = require("../../middlewares/is_logged_user")
@@ -32,13 +31,11 @@ router.post('/', async function(req, res) {
     //attende finchè non finisce il save nel db
     result = await user.save(function (err, u) {
         if (err) {
-            console.log(err);
+            res.status(500).json({status: 500, message: "Internal server error: user not created"});
         } else {
-          console.log(u.name + " saved to user collection.");
+            res.status(200).json({status: 200, message: "User created"});
         }
     });
-    
-    res.redirect(config.root);
 });
 
 //ottiene utente con un certo id

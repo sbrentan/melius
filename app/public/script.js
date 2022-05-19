@@ -31,29 +31,35 @@ function getUser(){
     .catch( error => console.error(error) );
 }
 
-function login()
+function login(email, password)
 {
-    var email = document.getElementById("email").value;
-    var password = document.getElementById("password").value;
     var status;
+    if(email == undefined || password == undefined){
+        email = document.getElementById("email").value;
+        password = document.getElementById("password").value;
+        console.log('login')
+    }
 
     fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email, password: password })
     })
-    .then((resp) => resp.json())
+    .then((resp) => {status = resp.status; return resp.json() })
     .then(function(data) {
-        
-        if(data.status == 200){                          
-            document.cookie = "username=John Doe; expires=Thu, 18 Dec 2013 12:00:00 UTC";
-            console.log("cookie created")
+        console.log(status)
+        console.log(data)
+        if(status == 200){                          
+            setCookie("userCookie", { token: data.token, email: data.email, name: data.name, id: data.id})
+            console.log("userCookie created")
+            location.href = "/" 
         }
         return;
     })
     .catch( error => console.error(error) ); // If there is any error you will catch them here
 
 };
+<<<<<<< HEAD
 function insertBook(_url)
 {
     //get the book title
@@ -126,3 +132,104 @@ function reserveBook(_bookid)
     .catch( error => console.error(error) );
 
 };
+=======
+
+function signin()
+{
+    var status;
+    var name = document.getElementById("name").value;
+    var email = document.getElementById("email").value;
+    var password = document.getElementById("password").value;
+
+    fetch('/api/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, email: email, password: password })
+    })
+    .then((resp) => {status = resp.status; return resp.json() })
+    .then(function(data) {
+        
+        if(status == 200){    
+            login(email, password)
+            console.log('signin')
+            location.href = "/"
+        }
+        return;
+    })
+    .catch( error => console.error(error) ); // If there is any error you will catch them here
+
+};
+
+function logout(){
+    var status;
+    if(getCookie("userCookie") == null) return;
+
+    fetch('/api/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        //body: JSON.stringify({ token: getCookie("userCookie").token })
+    })
+    .then((resp) => {status = resp.status; return resp.json() })
+    .then(function(data) {
+        console.log(data)
+        
+        if(status == 200)
+            deleteCookie("userCookie")
+        return;
+    })
+    .catch( error => console.error(error) ); // If there is any error you will catch them here
+}
+
+function getProfile() {
+    var status;
+    var id = getCookie("userCookie").id.toString();
+
+    if (id == null) return;
+
+    fetch('/api/users/'+ id, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: getCookie("userCookie").token })
+    })
+    .then((resp) => {console.log(resp);status = resp.status; return resp.json() })
+    .then(function(data) {
+        console.log(data)
+        if(status == 200)
+            console.log(data)
+        return;
+    })
+    .catch( error => console.error(error) ); // If there is any error you will catch them here
+}
+
+function setCookie(cname, cvalue) {
+    const d = new Date();
+    d.setTime(d.getTime() + 24*60*60*1000); //one day
+    let expires = "expires="+ d.toUTCString();
+    document.cookie = cname + "=" + JSON.stringify(cvalue) + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+    // Split cookie string and get all individual name=value pairs in an array
+    var cookieArr = document.cookie.split(";");
+    
+    // Loop through the array elements
+    for(var i = 0; i < cookieArr.length; i++) {
+        var cookiePair = cookieArr[i].split("=");
+        
+        /* Removing whitespace at the beginning of the cookie name
+        and compare it with the given string */
+        if(cname == cookiePair[0].trim()) {
+            // Decode the cookie value and return
+            return JSON.parse(decodeURIComponent(cookiePair[1]));
+        }
+    }
+    
+    // Return null if not found
+    return null;
+}
+
+function deleteCookie(cname){
+    document.cookie = cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+}
+
+>>>>>>> origin/gui
