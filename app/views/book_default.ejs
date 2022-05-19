@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="text/javascript" src="../../public/script.js"></script>
+        <title>Book</title>
+    </head>
+    <body>
+        <br>
+        <center>
+            <label>Title: </label><input style="margin: 10px 0;" type="text" name="title" value='<%= book ? book.title : "" %>' readonly><br>
+            <label>Description: </label><input style="margin: 10px 0;" type="text" name="description" value='<%= book ? book.description : "" %>' readonly><br>
+            <label>Author: </label><input style="margin: 10px 0;" type="text" name="author" value='<%= book ? book.author : "" %>' readonly><br>
+            <div style="width: 30%; margin: auto; margin-top: 10px;">
+                <input style="margin: 0 10px" type="submit" value="Make a reservation" onclick="reserveBook('<%= book ? '/'+book._id : '' %>')">
+            </div>
+        </center>
+  </body>
+</html>

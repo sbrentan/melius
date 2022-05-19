@@ -7,8 +7,12 @@ router.get('/login', async function(req, res) {
     res.render('login');
 })
 
-router.get('/:id', async function(req, res) {
+router.get('/profile', async function(req, res) {
     res.render('profile');
+})
+
+router.get('/signin', async function(req, res) {
+    res.render('signin');
 })
 
 module.exports = router

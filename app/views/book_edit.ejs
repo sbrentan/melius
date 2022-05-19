@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Edit Book</title>
+        <script type="text/javascript" src="../../public/script.js"></script>
+        <title><%= book ? 'Edit' : 'Insert' %> Book</title>
     </head>
     <body>
-        Sciao belo
         <br>
-        <form action="/api/books<%= book ? '/'+book._id : '' %>" method="POST">
-            <label>Title: </label><input type="text" name="title" value='<%= book ? book.title : "" %>' required><br>
-            <label>Description: </label><input type="text" name="description" value='<%= book ? book.description : "" %>' required><br>
-            <label>Author: </label><input type="text" name="author" value='<%= book ? book.author : "" %>' required><br>
-            <label>Image: </label><input type="text" name="image" value='<%= book ? book.image : "" %>' required><br>
-            <input type="submit" value="Submit">
-        </form>
-        <form action="/api/books/<%= book.id %>/purge" method="POST">
-            <button>Purge</button>
-        </form>
+        <center>
+            <label>Title: </label><input style="margin: 10px 0;" type="text" name="title" value='<%= book ? book.title : "" %>' required><br>
+            <label>Description: </label><input style="margin: 10px 0;" type="text" name="description" value='<%= book ? book.description : "" %>' required><br>
+            <label>Author: </label><input style="margin: 10px 0;" type="text" name="author" value='<%= book ? book.author : "" %>' required><br>
+            <div style="width: 30%; margin: auto; margin-top: 10px;">
+                <input style="margin: 0 10px" type="submit" value="<%= book ? 'Edit' : 'Insert' %>" onclick="insertBook('<%= book ? '/'+book._id : '' %>')">
+                <button style="margin: 0 10px" onclick="purgeBook('<%= book.id %>')">Purge</button>
+            </div>
+        </center>
   </body>
 </html>

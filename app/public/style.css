@@ -1,0 +1,10 @@
+.header{
+	display: grid;
+	grid-template-columns: auto auto auto 50px ;
+	margin-top: 25px;
+	border: 1px black solid;
+	padding: 10px 20px;
+}
+.header>*{
+	text-align: center;
+}

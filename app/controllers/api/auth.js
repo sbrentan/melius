@@ -3,20 +3,27 @@ var router = express.Router();
 var config = require('../../config')
 const User = require("../../models/user")
 var md5 = require("md5")
+const auth = require("../../middlewares/auth")
 var jwt = require('jsonwebtoken')
 
 //login 
-router.post("/login", async function(req, res) { 
-    
+router.post("/login", async function(req, res) {
+
     var user = new User({
         email: req.body.email,
         password: md5(req.body.password)
     });
     
-    User.findOne({email: user.email, password: user.password}, async function(err, result){
+    User.findOne({email: user.email, password: user.password}, async function(err, result){ 
+        console.log(user.email, user.password)
+        
         if(err){
             console.log("Authentication failed");
             res.status(500).json({status: 500, message: "Authentication failed"});
+        }
+        else if(result.length == 0){
+            console.log("Unauthorized");
+            res.status(401).json({status: 401, message: "Unauthorized"});
         } else {
             var payload = {
         		email: user.email,
@@ -31,19 +38,22 @@ router.post("/login", async function(req, res) {
             
             req.session.tokens = (req.session.tokens || [])
             req.session.tokens.push({id: result._id, token: token, email: user.email})
-            
+
             res.json({
-        		success: true,
         		token: token,
-        		email: user.email
+        		email: user.email,
+                name: result.name,
+                id: result._id
         	});
         }
     })
 });
-
-router.post("/logout", async function(req, res) {
+//req.params.id
+router.post("/logout", auth, async function(req, res) {
     if(!req.body.token)
         res.status(400).json({status: 400, message: "No token provided"});
+    else if(!req.session.tokens)
+        res.status(400).json({status: 400, message: "No session found"});
     else{
         for(i = 0; i < req.session.tokens.length; i++){
             if(req.session.tokens[i].token == req.body.token){

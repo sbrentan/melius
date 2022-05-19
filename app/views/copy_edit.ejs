@@ -4,7 +4,7 @@
         <title>Edit Copy</title>
     </head>
     <body>
-        Sciao belo
+        
         <br>
         <form action="/api/copies<%= copy ? '/'+copy._id : '' %>" method="POST">
             <label>Book: </label><input type="text" name="book" value='<%= copy ? copy.book : "" %>' required><br>

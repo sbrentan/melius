@@ -8,7 +8,7 @@ app.set('views', path.join(__dirname, './views/'));
 app.set('view engine', 'ejs');
 
 app.use('/public', express.static('public')); 
-app.use(parser.urlencoded({extended: false}))
+app.use(parser.json())
 
 const oneDay = 1000 * 60 * 60 * 24;
 app.use(session({
