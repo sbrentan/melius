@@ -163,7 +163,7 @@ function logout(){
     var status;
     if(getCookie("userCookie") == null) return;
 
-    fetch('/api/logout', {
+    fetch('/api/logout?token='+getCookie("userCookie").token, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         //body: JSON.stringify({ token: getCookie("userCookie").token })
@@ -231,7 +231,7 @@ function deleteCookie(cname){
     document.cookie = cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
 function setheader() {
-    if(getCookie("userCookie").id != null){
+    if(getCookie("userCookie") != null){
         document.getElementById("loggerdiv").innerHTML="logged";
     }else{
         document.getElementById("loggerdiv").innerHTML="nonlogged";
