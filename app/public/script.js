@@ -75,7 +75,7 @@ function insertBook(_url)
     }
     console.log(url);
 
-    fetch(url, {
+    fetch(url+ "?token="+getCookie("userCookie").token , {
         method: meth,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify( { title: _title, description: _description, author: _author } ),
@@ -99,7 +99,7 @@ function purgeBook(_url)
 
     console.log(url);
 
-    fetch(url, {
+    fetch(url+ "?token="+getCookie("userCookie").token , {
         method: 'DELETE',
     })
     .then((resp) => {
@@ -117,7 +117,7 @@ function reserveBook(_bookid)
     var url = '../../api/users/'+userid+'/reservations';
 
 
-    fetch(url, {
+    fetch(url+ "?token="+getCookie("userCookie").token , {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify( { book: _bookid } ),
