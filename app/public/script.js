@@ -175,6 +175,7 @@ function logout(){
         return;
     })
     .catch( error => console.error(error) ); // If there is any error you will catch them here
+    location.reload();
 }
 
 function getProfile() {
@@ -230,9 +231,8 @@ function deleteCookie(cname){
 }
 function setheader() {
     if(getCookie("userCookie") != null){
-        document.getElementById("loggerdiv").innerHTML="logged";
+        document.getElementById("logindiv").style.display = "None";
     }else{
-        document.getElementById("loggerdiv").innerHTML="nonlogged";
-
+        document.getElementById("logoutdiv").style.display = "None";
     }
 }
