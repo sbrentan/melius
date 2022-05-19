@@ -1,20 +1,16 @@
-<!DOCTYPE html>
-<html>
-    <head>
+<%- include('common/header.ejs') %>
         <title>Edit Copy</title>
-        <script type="text/javascript" src="../../public/script.js"></script>
         <div><a href="/ui/copies" style="border: solid 1px black; border-radius: 3px; padding: 5px;text-decoration: none; margin: 10px; background-color:#f3f3f3; color: black;">Return</a></div>
     </head>
-    <body>
-        
+    <body onload="setheader()">
         <br>
             <label>Book: </label><input type="text" name="book" value='<%= copy ? copy.book : "" %>' required><br>
             <label>Owner: </label><input type="text" name="owner" value='<%= copy ? copy.owner : "" %>' required><br>
             <label>Buyer: </label><input type="text" name="buyer" value='<%= copy ? copy.buyer : "" %>' required><br>
             <label>Price: </label><input type="text" name="price" value='<%= copy ? copy.price : "" %>' required><br>
             <div style="width: 30%; margin: auto; margin-top: 10px;">
-                <input style="margin: 0 10px" type="submit" value="<%= copy ? 'Edit' : 'Insert' %>" onclick="insertCopy('<%= copy ? '/'+copy._id : '' %>')">
-                <button style="margin: 0 10px; <%= copy ? '' : 'display: none' %>" onclick="purgeCopy('<%= copy.id %>')">Purge</button>
+                <input name="adminonly" style="margin: 0 10px" type="submit" value="<%= copy ? 'Edit' : 'Insert' %>" onclick="insertCopy('<%= copy ? '/'+copy._id : '' %>')">
+                <button name="adminonly" style="margin: 0 10px; <%= copy ? '' : 'display: none' %>" onclick="purgeCopy('<%= copy.id %>')">Purge</button>
             </div>
   </body>
 </html>

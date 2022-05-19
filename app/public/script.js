@@ -264,7 +264,14 @@ function setheader() {
     }else{
         document.getElementById("logoutdiv").style.display = "None";
     }
+    if(false){                                                                  //TODO:condition to if not admin
+        var items = document.getElementsByName("adminonly");
+        for (var i = items.length - 1; i >= 0; i--) {
+            items[i].style.display = "None";
+        }
+    }
 }
+
 function insertCopy(_url)
 {
     //get the book title

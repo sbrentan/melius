@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html>
-	<head>
+<%- include('common/header.ejs') %>
 		<title>Edit User</title>
 	</head>
-	<body>
+	<body onload="setheader()">
 		<h2>Create</h2>
         <form action="/api/users" method="POST">
             <input type="text" name="name" required><br>

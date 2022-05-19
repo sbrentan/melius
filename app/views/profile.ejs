@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<html>
-	<head>
+<%- include('common/header.ejs') %>
 		<title>Profile</title>
-		<script src="/public/script.js" type="text/javascript"></script>
 	</head>
-	<body onload="getProfile()">
+	<body onload="getProfile();setheader()">
 		<center>
 			<div style="background:teal; padding: 25px 0;"id="profileInfo"></div><br>
 			<div style="background:greenyellow; padding: 25px 0;"id="reservations"></div>
