@@ -59,7 +59,6 @@ function login(email, password)
     .catch( error => console.error(error) ); // If there is any error you will catch them here
 
 };
-<<<<<<< HEAD
 function insertBook(_url)
 {
     //get the book title
@@ -132,7 +131,7 @@ function reserveBook(_bookid)
     .catch( error => console.error(error) );
 
 };
-=======
+
 
 function signin()
 {
@@ -231,5 +230,3 @@ function getCookie(cname) {
 function deleteCookie(cname){
     document.cookie = cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
-
->>>>>>> origin/gui

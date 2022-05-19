@@ -2,6 +2,7 @@ const express 		= require('express');
 const auth 			= require("../../middlewares/auth")
 const Book 			= require("../../models/book")
 const Copy 			= require("../../models/copy")
+const is_admin      = require("../../middlewares/is_admin")
 const Reservation 	= require("../../models/reservation")
 const router 		= express.Router();
 

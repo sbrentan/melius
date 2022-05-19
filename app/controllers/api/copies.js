@@ -1,5 +1,7 @@
 const express 	= require('express');
 const Copy 		= require("../../models/copy")
+const is_admin  = require("../../middlewares/is_admin")
+const auth  	= require("../../middlewares/auth")
 const router	= express.Router();
 
 router.get('/', async function(req, res){

@@ -1,22 +1,12 @@
-<<<<<<< HEAD
 const express         = require('express');
 const md5             = require("md5")
 const config          = require('../../config')
 const auth            = require("../../middlewares/auth")
 const is_logged_user  = require("../../middlewares/is_logged_user")
+const is_admin        = require("../../middlewares/is_admin")
 const User            = require("../../models/user")
 const Reservation     = require("../../models/reservation")
 const router          = express.Router();
-=======
-const md5 = require("md5")
-const auth = require("../../middlewares/auth")
-const is_logged_user = require("../../middlewares/is_logged_user")
-const User = require("../../models/user")
-const Reservation = require("../../models/reservation")
-
-const express = require('express');
-const router = express.Router();
->>>>>>> origin/gui
 
 //ottiene tutti gli utenti 
 router.get("/", auth, is_admin, async function(req, res) {
@@ -40,16 +30,10 @@ router.post('/', async function(req, res) {
     //attende finchè non finisce il save nel db
     result = await user.save(function (err, u) {
         if (err) {
-<<<<<<< HEAD
             res.status(500).json({status: 500, message: "Internal server error:" + err})
         } else {
           console.log(u.name + " saved to user collection.");
           res.status(200).json({status: 200, message: "User created successfully"})
-=======
-            res.status(500).json({status: 500, message: "Internal server error: user not created"});
-        } else {
-            res.status(200).json({status: 200, message: "User created"});
->>>>>>> origin/gui
         }
     });
 });
