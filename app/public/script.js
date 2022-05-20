@@ -1,3 +1,26 @@
+function getUserStatus() {
+    var cookie =getCookie("userCookie");
+    console.log(cookie)
+    if(cookie == null){
+        console.log("non logged user")
+    }
+    else if(cookie.role == "admin"){
+        showHiddenElements("hiddenAdminRole")
+        showHiddenElements("hiddenUserRole")
+        console.log("admin")
+    }
+    else{
+        showHiddenElements("hiddenUserRole")
+        console.log("logged user")
+    }
+}
+
+function showHiddenElements(className){
+    var elements = document.getElementsByClassName(className)
+    const thingsArray = Array.from(elements)
+    thingsArray.forEach(thing => thing.classList.remove(className))
+}
+
 function getUsers(){
     
     fetch('/api/users')
@@ -40,7 +63,7 @@ function login(email, password){
         
         
         if(status == 200){                          
-            setCookie("userCookie", { token: data.token, email: data.email, name: data.name, id: data.id})
+            setCookie("userCookie", { token: data.token, email: data.email, name: data.name, id: data.id, role: data.role})
             console.log("userCookie created")
             location.href = "/" 
         }
@@ -174,6 +197,7 @@ function reserveBook(_bookid){
     .then((resp) => {
         if(resp.status==200){
             console.log(resp);
+            alert("Libro prenotato")
             return;
         }else{
             window.alert('Error '+resp.status); 
@@ -198,9 +222,8 @@ function signin(){
     .then(function(data) {
         
         if(status == 200){    
-            login(email, password)
             console.log('signin')
-            location.href = "/"
+            login(email, password)
         }
         return;
     })
@@ -246,7 +269,7 @@ function getProfile() {
         getReservations();
         return;
     })
-    .catch( error => console.error(error) ); // If there is any error you will catch them here
+    .catch( error => console.log(status));//console.error(error) ); // If there is any error you will catch them here
 }
 
 function getReservations() {
@@ -307,6 +330,8 @@ function deleteCookie(cname){
 }
 
 function setheader() {
+    getUserStatus();
+
     if(getCookie("userCookie") != null){
         document.getElementById("logindiv").style.display = "None";
     }else{

@@ -1,13 +1,7 @@
-- Remove copies/contact us from navbar and add sign-up instead
-- remove "new book" from collection
-- in book details remove "make a reservation" when not logged
 - check if documentation is correct
 - fill "Home" with random stuff
-- profile: change colors, change id printing in reservations
-- do something when reserved a book(alert or whatever)
 - ajax response handling error control(login)
-- "insert book" button remove when not admin
-
+- update documentation role admin login
 - finish wiki
 
 - heroku deployment and basic data upload
