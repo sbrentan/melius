@@ -67,6 +67,10 @@ function login(email, password){
             console.log("userCookie created")
             location.href = "/"
         }
+        else{
+            alert("Credenziali errate")
+        }
+        
         return;
     })
     .catch( error => console.error(error) ); // If there is any error you will catch them here
@@ -224,6 +228,10 @@ function signin(){
         if(status == 200){
             console.log('signin')
             login(email, password)
+            alert("Utente creato")
+        }
+        else{
+            alert("Utente già esistente")
         }
         return;
     })
