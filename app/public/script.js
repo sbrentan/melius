@@ -22,13 +22,13 @@ function showHiddenElements(className){
 }
 
 function getUsers(){
-    
+
     fetch('/api/users')
     .then((resp) => resp.json()) // Transform the data into json
     .then(function(data) { // Here you get the data to modify as you please
 
         return data.map(function(user) {
-            
+
             var container = document.getElementById('userContainer');
             container.innerHTML += `<a href="/ui/users/${user._id}">${user.name}</a><br>`;
         })
@@ -60,12 +60,12 @@ function login(email, password){
     })
     .then((resp) => {status = resp.status; return resp.json() })
     .then(function(data) {
-        
-        
-        if(status == 200){                          
+
+
+        if(status == 200){
             setCookie("userCookie", { token: data.token, email: data.email, name: data.name, id: data.id, role: data.role})
             console.log("userCookie created")
-            location.href = "/" 
+            location.href = "/"
         }
         return;
     })
@@ -103,7 +103,7 @@ function insertBook(_url){
             window.location.href = "../../ui/books";
             return;
         }else{
-            window.alert('Error '+resp.status); 
+            window.alert('Error '+resp.status);
         }
     })
     .catch( error => console.error(error) );
@@ -120,19 +120,19 @@ function getBook(bookId, callback){
 }
 
 function getBooks(filtered){
-    
+
     if(filtered)
         url = '/api/books?name=' + document.getElementById('filter').value;
     else
         url = '/api/books'
-    
+
     fetch(url)
     .then((resp) => resp.json()) // Transform the data into json
     .then(function(data) { // Here you get the data to modify as you please
-        
+
         var container = document.getElementById('bookContainer');
         container.innerHTML = ""
-        
+
         return data.map(function(book) {
             container.innerHTML += `<a class='book' href="/ui/books/${book._id}"><p>${book.title}</p><br>${book.author}</a>`;
         })
@@ -145,10 +145,10 @@ function getCopies(){
     fetch("/api/copies")
     .then((resp) => resp.json()) // Transform the data into json
     .then(function(data) { // Here you get the data to modify as you please
-        
+
         var container = document.getElementById('copiesContainer');
         container.innerHTML = ""
-        
+
         return data.map(function(copy) {
             getBook(copy.book, function(tmp){
                 container.innerHTML += `<a href="/ui/copies/${copy._id}">${tmp.title}</a><br>`;
@@ -174,7 +174,7 @@ function purgeBook(_url){
             window.location.href = "../../ui/books";
             return;
         }else{
-            window.alert('Error '+resp.status); 
+            window.alert('Error '+resp.status);
         }
     })
     .catch( error => console.error(error) );
@@ -183,7 +183,7 @@ function purgeBook(_url){
 function reserveBook(_bookid){
     var cookie = getCookie("userCookie");
     if(cookie == null) { alert("no"); return; }
-    
+
     //get the book title
     console.log(cookie.id)
     var url = '../../api/users/'+ cookie.id +'/reservations';
@@ -200,7 +200,7 @@ function reserveBook(_bookid){
             alert("Libro prenotato")
             return;
         }else{
-            window.alert('Error '+resp.status); 
+            window.alert('Error '+resp.status);
         }
     })
     .catch( error => console.error(error) );
@@ -220,14 +220,14 @@ function signin(){
     })
     .then((resp) => {status = resp.status; return resp.json() })
     .then(function(data) {
-        
-        if(status == 200){    
+
+        if(status == 200){
             console.log('signin')
             login(email, password)
         }
         return;
     })
-    .catch( error => console.error(error) ); // If there is any error you will catch them here
+    .catch( error => console.error(error)); // If there is any error you will catch them here
 };
 
 function logout(){
@@ -240,7 +240,7 @@ function logout(){
     })
     .then((resp) => {status = resp.status; return resp.json() })
     .then(function(data) {
-        
+
         if(status == 200)
             deleteCookie("userCookie")
         return;
@@ -250,7 +250,7 @@ function logout(){
 }
 
 function getProfile() {
-    
+
     var status;
     var id = getCookie("userCookie").id.toString();
 
@@ -262,7 +262,7 @@ function getProfile() {
     })
     .then((resp) => {console.log(resp);status = resp.status; return resp.json() })
     .then(function(data) {
-        
+
         if(status == 200){
             document.getElementById("profileInfo").innerHTML+="<p>"+ data.email +"</p><p>"+ data.name +"</p>";
         }
@@ -284,7 +284,7 @@ function getReservations() {
     })
     .then((resp) => {console.log(resp);status = resp.status; return resp.json() })
     .then(function(data) {
-        
+
         if(status == 200){
             console.log(data);
             for(var i = 0;i<data.length;i++){
@@ -308,11 +308,11 @@ function setCookie(cname, cvalue) {
 function getCookie(cname) {
     // Split cookie string and get all individual name=value pairs in an array
     var cookieArr = document.cookie.split(";");
-    
+
     // Loop through the array elements
     for(var i = 0; i < cookieArr.length; i++) {
         var cookiePair = cookieArr[i].split("=");
-        
+
         /* Removing whitespace at the beginning of the cookie name
         and compare it with the given string */
         if(cname == cookiePair[0].trim()) {
@@ -320,7 +320,7 @@ function getCookie(cname) {
             return JSON.parse(decodeURIComponent(cookiePair[1]));
         }
     }
-    
+
     // Return null if not found
     return null;
 }
@@ -375,7 +375,7 @@ function insertCopy(_url){
             window.location.href = "../../ui/copies";
             return;
         }else{
-            window.alert('Error '+resp.status); 
+            window.alert('Error '+resp.status);
         }
     })
     .catch( error => console.error(error) );
@@ -398,7 +398,7 @@ function purgeCopy(_url){
             window.location.href = "../../ui/copies";
             return;
         }else{
-            window.alert('Error '+resp.status); 
+            window.alert('Error '+resp.status);
         }
     })
     .catch( error => console.error(error) );

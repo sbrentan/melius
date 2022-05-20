@@ -10,7 +10,7 @@ const Copy            = require("../../models/copy")
 const Reservation     = require("../../models/reservation")
 const router          = express.Router();
 
-//ottiene tutti gli utenti 
+//ottiene tutti gli utenti
 router.get("/", auth, is_admin, async function(req, res) {
     User.find({}, function(err, users){
         if(err)
@@ -22,28 +22,37 @@ router.get("/", auth, is_admin, async function(req, res) {
 
 //crea un utente
 router.post('/', async function(req, res) {
-    
+
     var user = new User({
         name: req.body.name,
         email: req.body.email,
         password: md5(req.body.password),
         role: "user"
     });
-    
-    //attende finchè non finisce il save nel db
-    result = await user.save(function (err, u) {
-        if (err) {
+
+    User.findOne({email: user.email}, async function(err, result){
+        if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})
-        } else {
-          console.log(u.name + " saved to user collection.");
-          res.status(200).json({status: 200, message: "User created successfully"})
+        else if(!result || result.length == 0){
+            //nessun utente, quindi registra
+            await user.save(function (err, u) {
+                if (err) {
+                    res.status(500).json({status: 500, message: "Internal server error:" + err})
+                } else {
+                  console.log(u.name + " saved to user collection.");
+                  res.status(200).json({status: 200, message: "User created successfully"})
+                }
+            });
         }
-    });
+        else {
+            res.status(403).json({status: 403, message: "User with that email already exists"})
+        }
+    })
 });
 
 //ottiene utente con un certo id
 router.get("/:id", auth, is_logged_user, async function(req, res) {
-    
+
     User.findOne({_id: req.params.id}, function(err, user){
         if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})
@@ -57,7 +66,7 @@ router.get("/:id", auth, is_logged_user, async function(req, res) {
 
 //modifica l'utente
 router.put("/:id", auth, is_logged_user, async function(req, res) {
-    
+
     User.findOne({_id: req.params.id}, async function(err, user){
         if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})
@@ -66,7 +75,7 @@ router.put("/:id", auth, is_logged_user, async function(req, res) {
         else {
             const filter = { _id: user._id };
             const update = { name: req.body.name, email: req.body.email, password: md5(req.body.password) };
-            
+
             User.findOneAndUpdate(filter, update, {new: true}, function(err, result){
                 if(err){
                     res.status(500).json({status: 500, message: "Internal server error while updating"});
@@ -77,7 +86,7 @@ router.put("/:id", auth, is_logged_user, async function(req, res) {
             });
         }
     })
-    
+
 });
 
 //elimina utente
@@ -102,7 +111,7 @@ router.delete("/:id", auth, is_logged_user, function(req, res) {
 });
 
 router.get("/:id/reservations", auth, is_logged_user, async function(req, res) {
-    
+
     User.findOne({_id: req.params.id}, function(err, user){
         if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})
@@ -157,7 +166,7 @@ router.post('/:id/reservations', auth, is_logged_user, async function(req, res) 
 })
 
 router.get("/:id/reservations/:rid", auth, is_logged_user, async function(req, res) {
-    
+
     User.findOne({_id: req.params.id}, function(err, user){
         if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})
@@ -169,7 +178,7 @@ router.get("/:id/reservations/:rid", auth, is_logged_user, async function(req, r
                     res.status(500).json({status: 500, message: "Internal server error:" + err})
                 else if(!reservation)
                     res.status(404).json({status: 404, message: "Reservation not found"})
-                else 
+                else
                     res.send(reservation)
             })
         }
@@ -177,7 +186,7 @@ router.get("/:id/reservations/:rid", auth, is_logged_user, async function(req, r
 });
 
 router.delete("/:id/reservations/:rid", auth, is_logged_user, async function(req, res) {
-    
+
     User.findOne({_id: req.params.id}, function(err, user){
         if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})
