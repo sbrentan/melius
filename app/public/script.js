@@ -3,6 +3,7 @@ function getUserStatus() {
     console.log(cookie)
     if(cookie == null){
         console.log("non logged user")
+        return;
     }
     else if(cookie.role == "admin"){
         showHiddenElements("hiddenAdminRole")
@@ -13,6 +14,9 @@ function getUserStatus() {
         showHiddenElements("hiddenUserRole")
         console.log("logged user")
     }
+
+    //logged both
+    document.getElementById('signindiv').classList.add("hiddenUserRole");
 }
 
 function showHiddenElements(className){
@@ -70,7 +74,7 @@ function login(email, password){
         else{
             alert("Credenziali errate")
         }
-        
+
         return;
     })
     .catch( error => console.error(error) ); // If there is any error you will catch them here
