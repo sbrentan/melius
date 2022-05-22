@@ -1,7 +1,6 @@
 
 - check if documentation is correct
 - when inserting new book, check if already exists?
-- fill "Home" with random stuff
 - update documentation role admin login
 - finish wiki
 
