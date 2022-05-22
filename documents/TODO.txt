@@ -1,12 +1,11 @@
+
 - check if documentation is correct
+- when inserting new book, check if already exists?
 - fill "Home" with random stuff
-- ajax response handling error control(login)
 - update documentation role admin login
 - finish wiki
 
 - heroku deployment and basic data upload
-
-
 
 
 ################## SPRINT 2

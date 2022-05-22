@@ -45,7 +45,7 @@ router.post('/', async function(req, res) {
             });
         }
         else {
-            res.status(403).json({status: 403, message: "User with that email already exists"})
+            res.status(400).json({status: 400, message: "User with that email already exists"})
         }
     })
 });
@@ -119,7 +119,10 @@ router.get("/:id/reservations", auth, is_logged_user, async function(req, res) {
             res.status(404).json({status: 404, message: "User not found"})
         else {
             Reservation.find({user: user._id}, function(err, reservations) {
-                res.send(reservations)
+                if(err)
+                    res.status(500).json({status: 500, message: "Internal server error:" + err})
+                else
+                    res.send(reservations)
             })
         }
     })
