@@ -1,8 +1,8 @@
 <%- include('common/header.ejs') %>
         <title>Edit Copy</title>
-        <div><a href="/ui/copies" style="border: solid 1px black; border-radius: 3px; padding: 5px;text-decoration: none; margin: 10px; background-color:#f3f3f3; color: black;">Return</a></div>
     </head>
     <body onload="setheader()">
+        <div><a href="/ui/books"><button class="fa fa-arrow-left" style="font-size: 20px;"> Indietro</button></a></div>
         <br>
             <label>Book: </label><input type="text" name="book" value='<%= copy ? copy.book : "" %>' required><br>
             <label>Owner: </label><input type="text" name="owner" value='<%= copy ? copy.owner : "" %>' required><br>

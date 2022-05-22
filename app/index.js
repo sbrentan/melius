@@ -5,7 +5,7 @@ var mongoose = require('mongoose');
 
 //Set up default mongoose connection
 //var mongoDB = 'mongodb://localhost:27017/melius';
-var mongoDB = 'mongodb+srv://melius:qwerty123@melius.i26zq.mongodb.net/?retryWrites=true&w=majority';
+var mongoDB = 'mongodb+srv://melius:qwerty123@melius.i26zq.mongodb.net/melius?retryWrites=true&w=majority';
 
 const port = process.env.PORT || 80;
 
