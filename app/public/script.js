@@ -253,12 +253,13 @@ function logout(){
     .then((resp) => {status = resp.status; return resp.json() })
     .then(function(data) {
 
-        if(status == 200)
+        if(status == 200){
             deleteCookie("userCookie")
+            location.href = "/ui/login";
+        }
         return;
     })
     .catch( error => console.error(error) ); // If there is any error you will catch them here
-    location.reload();
 }
 
 function getProfile() {

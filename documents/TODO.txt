@@ -6,7 +6,6 @@
 - finish wiki (redo and modify test cases(see link), add burndown chart and final backlog to Sprint backlog file, complete other sections)
 - add teachers to repository
 - export wiki in pdf for mileston #5
-- basic data upload (copies)
 
 
 ################## SPRINT 2
