@@ -1,0 +1,14 @@
+<%- include('common/header.ejs') %>
+		<title>Login</title>
+	</head>
+	<body onload="setheader()">
+        <center>
+            <!-- change /api/users into /ui/users + ajax -->
+                <h2>Login</h2>
+                <input class="inputField" type="email" id="email" placeholder="Email" required><br>
+                <input class="inputField" type="password" id="password" placeholder="Password" required><br>
+				<br>
+                <button class="button" type="button" onclick="login()">Login</button>
+        </center>
+	</body>
+</html>

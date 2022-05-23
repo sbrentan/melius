@@ -1,0 +1,17 @@
+<%- include('common/header.ejs') %>
+        <title>Book</title>
+    </head>
+    <body onload="setheader()">
+        <div><a href="/ui/books"><button class="fa fa-arrow-left" style="font-size: 20px;"> Indietro</button></a></div>
+        <br>
+        <center>
+            <label><b>Title: </b></label><input style="margin: 10px 0;" type="text" name="title" value='<%= book ? book.title : "" %>' readonly><br>
+            <label><b>Description: </b></label><input style="margin: 10px 0;" type="text" name="description" value='<%= book ? book.description : "" %>' readonly><br>
+            <label><b>Author: </b></label><input style="margin: 10px 0;" type="text" name="author" value='<%= book ? book.author : "" %>' readonly><br>
+
+            <div class="hiddenUserRole" style="width: 30%; margin: auto; margin-top: 10px;">
+                <input class="button" type="submit" value="Make a reservation" onclick="reserveBook('<%= book ? book._id : '' %>')">
+            </div>
+        </center>
+  </body>
+</html>

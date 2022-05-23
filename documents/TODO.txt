@@ -1,0 +1,17 @@
+
+################## SPRINT 1
+
+- check if documentation is correct
+- update documentation role admin login
+- finish wiki (redo and modify test cases(see link), add burndown chart and final backlog to Sprint backlog file, complete other sections)
+- add teachers to repository
+- export wiki in pdf for mileston #5
+
+
+################## SPRINT 2
+
+- heroku deployment
+- API change callbacks into promises .then e .catch
+- add "end()" to all methods to avoid random app crashes?
+- on new copy add select tag
+- add "Accept reservation" on dashboard: remember to change both fields in copy and reservation

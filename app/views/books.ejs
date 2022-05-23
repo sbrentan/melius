@@ -1,0 +1,18 @@
+<%- include('common/header.ejs') %>
+		<title>Books</title>
+	</head>
+	<body onload="getBooks(false); setheader();">
+		<input class="inputField" type="text" id="filter" placeholder="Filtro ricerca">
+		<button class="button" type="button" onclick="getBooks(true)">Filtra</button>
+		<br><br>
+
+		<div id="bookContainer">
+
+		</div>
+		<br>
+		<div class="hiddenAdminRole">
+			<a href="/ui/books/new">New book</a>
+		</div>
+
+	</body>
+</html>
