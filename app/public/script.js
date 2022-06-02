@@ -417,6 +417,54 @@ function purgeCopy(_url){
     .catch( error => console.error(error) );
 };
 
+function changePassword(){
+    var oldPassword = document.getElementById("oldPassword").value;
+    var newPassword = document.getElementById("newPassword").value;
+    var id = getCookie("userCookie").id.toString();
+
+    if(oldPassword == "" || newPassword == ""){
+        
+        alert("password errate");
+        return;
+    }
+
+    if (id == null) return;
+
+    fetch('/api/users/'+ id + "/check?token="+getCookie("userCookie").token , {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: oldPassword})
+    })
+    .then((resp) => { return resp.json() })
+    .then(function(data) {
+
+        if(!data.correct){
+            alert("Vecchia password errata");
+            return;
+        }
+
+        fetch('/api/users/'+ id + "?token="+getCookie("userCookie").token , {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: newPassword})
+        })
+        .then((resp) => {
+    
+    
+            if(resp.status == 200){
+                alert("password modificata correttamente")
+            }
+            else{
+                alert("Credenziali errate")
+            }
+    
+            return;
+        })
+        .catch( error => console.error(error) );
+    })
+    
+}
+
 function askInfo(){
     var status;
 
