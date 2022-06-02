@@ -10,8 +10,24 @@
 
 ################## SPRINT 2
 
-- heroku deployment
+##MUST
+- on new copy add select tag
+- add "Accept reservation" on dashboard: remember to change both fields in copy and reservation --API/UI
+- "Delete reservation" on profile
+- "Change password", "Edit profile" on profile
+- Test cases
+- Form information requests
+- "Dashboard"
+	- add/delete/view/edit users
+	- add/delete/view/edit books
+	- add/delete/view/edit copies
+	- General informations?
+
+##OPTIONAL
 - API change callbacks into promises .then e .catch
 - add "end()" to all methods to avoid random app crashes?
-- on new copy add select tag
-- add "Accept reservation" on dashboard: remember to change both fields in copy and reservation
+
+- heroku deployment
+
+
+
