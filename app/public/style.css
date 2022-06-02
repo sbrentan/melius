@@ -44,10 +44,14 @@
 }
 
 .inputField{
-	width: 200px;
-	height: 25px;
-	padding: 5px 10px;
-	margin: 10px auto;
+	width: 250px;
+	padding: 12px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-sizing: border-box;
+	margin-top: 6px;
+	margin-bottom: 16px;
+	resize: vertical;
 }
 
 .logout{
@@ -56,12 +60,17 @@
 
 .button{
 	background-color: rgb(75,191,182);
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    display: inline-block;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  display: inline-block;
 	text-decoration: none;
-    cursor: pointer;
-    transition-duration: .3s;
-    margin: 20px 0;
+  cursor: pointer;
+  transition-duration: .3s;
+  margin: 20px 0;
+}
+
+.contact-container {
+  margin: 100px;
+  padding: 20px;
 }

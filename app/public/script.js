@@ -416,3 +416,35 @@ function purgeCopy(_url){
     })
     .catch( error => console.error(error) );
 };
+
+function askInfo(){
+    var status;
+
+    var name = document.getElementById("name").value;
+    var surname = document.getElementById("surname").value;
+    var email = document.getElementById("email").value;
+    var subject = document.getElementById("subject").value;
+
+    if(name == "" || surname == "" || email == "" || subject == ""){
+        alert("Errore! compila tutti i campi");
+        return;
+    }
+
+    fetch('/api/contacts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name, surname: surname, email: email, subject: subject })
+    })
+    .then((resp) => {status = resp.status; return resp.json() })
+    .then(function(data) {
+
+        if(status == 200){
+            alert("Messaggio inviato correttamente")
+            location.href = "/";
+        }else{
+            alert("Errore: messaggio non inviato")
+        }
+        return;
+    })
+    .catch( error => console.error(error) );
+}

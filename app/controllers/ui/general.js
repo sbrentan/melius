@@ -14,6 +14,7 @@ router.get('/profile', async function(req, res) {
 router.get('/signin', async function(req, res) {
     res.render('signin');
 })
+
 router.get('/contacts', async function(req, res) {
     res.render('contacts');
 })
