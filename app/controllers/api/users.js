@@ -73,8 +73,11 @@ router.put("/:id", auth, is_logged_user, async function(req, res) {
         else if(!user)
             res.status(404).json({status: 404, message: "User not found"})
         else {
-            const filter = { _id: user._id };
-            const update = { name: req.body.name, email: req.body.email, password: md5(req.body.password) };
+            filter = { _id: user._id };
+            if(req.body.password)
+                update = { password: md5(req.body.password) };
+            else
+                update = { name: req.body.name, email: req.body.email };
 
             User.findOneAndUpdate(filter, update, {new: true}, function(err, result){
                 if(err){
@@ -109,6 +112,22 @@ router.delete("/:id", auth, is_logged_user, function(req, res) {
         }
     })
 });
+
+router.post("/:id/check", auth, is_logged_user, function(req, res) {
+    var user = new User({
+        email: req.user.email,
+        password: md5(req.body.password)
+    });
+    
+    User.findOne({email: user.email, password: user.password}, async function(err, result){
+        if(err)
+            res.status(500).json({status: 500, message: "Internal server error"});
+        else if(!result || result.length == 0)
+            res.status(200).json({status: 200, correct: false });
+        else
+            res.status(200).json({status: 200, correct: true });
+    })
+})
 
 router.get("/:id/reservations", auth, is_logged_user, async function(req, res) {
 
