@@ -272,7 +272,7 @@ function logout(){
     .catch( error => console.error(error) ); // If there is any error you will catch them here
 }
 
-function getProfile() {
+function getProfile(reservations) {
 
     var status;
     var id = getCookie("userCookie").id.toString();
@@ -287,18 +287,27 @@ function getProfile() {
     .then(function(data) {
 
         if(status == 200){
-            document.getElementById("profileInfo").innerHTML+="<p>"+ data.email +"</p><p>"+ data.name +"</p>";
+            if(reservations){
+                document.getElementById("email").innerText = data.email;
+                document.getElementById("name").innerText = data.name;
+            }
+            else{
+                document.getElementById("email").value = data.email;
+                document.getElementById("name").value = data.name;
+            }
+            
         }
+        if(!reservations)
+            return;
+            
         getReservations();
-        return;
     })
     .catch( error => console.log(status));//console.error(error) ); // If there is any error you will catch them here
 }
 
 function getReservations() {
-    var status;
+    var status,dataRes;
     var id = getCookie("userCookie").id.toString();
-
     if (id == null) return;
 
     fetch('/api/users/'+ id + "/reservations?token="+getCookie("userCookie").token , {
@@ -309,10 +318,11 @@ function getReservations() {
     .then(function(data) {
 
         if(status == 200){
-            console.log(data);
+            
             for(var i = 0;i<data.length;i++){
+                dataRes = data[i];
                 getBook(data[i].book, function(book){
-                    document.getElementById("reservations").innerHTML+="<div class='reservationdiv'><p>"+ book.title +"</p></div>";
+                    document.getElementById("reservations").innerHTML+="<div class='reservationdiv'><p>"+ book.title +"</p><button class=\"button\" type=\"button\" onclick=\"deleteReservation('"+ dataRes._id + "','" + book.title +"')\">elimina prenotazione</button></div>";
                 })
             }
         }
@@ -447,6 +457,7 @@ function changePassword(){
     
             if(resp.status == 200){
                 alert("password modificata correttamente")
+                location.href = ''
             }
             else{
                 alert("Credenziali errate")
@@ -510,3 +521,72 @@ function dashboardselected(selection) {
             break;  
     }
 }
+function editProfile() {
+    var cookie = getCookie("userCookie");
+    var name = document.getElementById("name").value;
+    var email = document.getElementById("email").value;
+    var id = cookie.id.toString();
+
+    if (id == null) return;
+
+    if(email == "" || name == ""){
+        
+        alert("dati non inseriti correttamente");
+        return;
+    }
+    else{
+        fetch('/api/users/'+ id + "?token="+getCookie("userCookie").token , {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name,email: email})
+        })
+        .then((resp) => {
+    
+    
+            if(resp.status == 200){
+                alert("dati modificati correttamente")
+                location.href = ''
+            }
+            else{
+                alert("errore nella modifica dei dati")
+            }
+    
+            return;
+        })
+        .catch( error => console.error(error) );
+    }
+    
+}
+
+function deleteReservation(resId,bookTitle) {
+    console.log("bobber")
+
+    var id =  getCookie("userCookie").id.toString();
+
+    if (id == null) return;
+
+    if(!confirm("vuoi davvero eliminare la prenotazione per '"+ bookTitle +"'"))
+        return;
+
+    fetch('/api/users/'+ id + "/reservations/" + resId + "?token="+getCookie("userCookie").token , {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then((resp) => { return resp.json() })
+    .then(function(data) {
+        if(data.status == 200){
+            alert("prenotazione eliminata correttamente")
+            location.href = ''
+        }
+        else{
+            alert("errore nell'eliminazione")
+        }
+
+        return;
+        
+    }).catch( error => console.error(error) );
+
+    
+    
+    
+}   
