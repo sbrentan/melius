@@ -19,4 +19,8 @@ router.get('/contacts', async function(req, res) {
     res.render('contacts');
 })
 
+router.get('/dashboard', async function(req, res) {
+    res.render('dashboard');
+})
+
 module.exports = router

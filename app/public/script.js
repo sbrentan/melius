@@ -14,11 +14,21 @@ function getUserStatus() {
         showHiddenElements("hiddenUserRole")
         console.log("logged user")
     }
+}
+
+function setheader() {
+    
+    getUserStatus();
+
+    if(getCookie("userCookie") != null){
+        document.getElementById("logindiv").style.display = "None";
+    }else{
+        document.getElementById("logoutdiv").style.display = "None";
 
     //logged both
     document.getElementById('signindiv').classList.add("hiddenUserRole");
+    }
 }
-
 function showHiddenElements(className){
     var elements = document.getElementsByClassName(className)
     const thingsArray = Array.from(elements)
@@ -342,22 +352,6 @@ function deleteCookie(cname){
     document.cookie = cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
 
-function setheader() {
-    getUserStatus();
-
-    if(getCookie("userCookie") != null){
-        document.getElementById("logindiv").style.display = "None";
-    }else{
-        document.getElementById("logoutdiv").style.display = "None";
-    }
-    if(false){                                                                  //TODO:condition to if not admin
-        var items = document.getElementsByName("adminonly");
-        for (var i = items.length - 1; i >= 0; i--) {
-            items[i].style.display = "None";
-        }
-    }
-}
-
 function insertCopy(_url){
     //get the book title
     var _book = document.getElementsByName("book")[0].value;
@@ -495,4 +489,24 @@ function askInfo(){
         return;
     })
     .catch( error => console.error(error) );
+}
+
+function dashboardselected(selection) {
+    switch(selection){
+        case 0:
+            document.getElementById("usercontainer").classList.remove("closed");
+            document.getElementById("bookcontainer").classList.add("closed");
+            document.getElementById("copycontainer").classList.add("closed");
+            break;  
+        case 1:
+            document.getElementById("usercontainer").classList.add("closed");
+            document.getElementById("bookcontainer").classList.remove("closed");
+            document.getElementById("copycontainer").classList.add("closed");
+            break;  
+        case 2:
+            document.getElementById("usercontainer").classList.add("closed");
+            document.getElementById("bookcontainer").classList.add("closed");
+            document.getElementById("copycontainer").classList.remove("closed");
+            break;  
+    }
 }
