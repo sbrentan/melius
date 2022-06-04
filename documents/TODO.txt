@@ -25,6 +25,9 @@
 	- add/delete/view/edit copies
 	- General informations?
 - add admin authentication to is_logged_user
+- add admin authentication to is_logged_user -----------------DONE
+- add is_admin to various methods
+
 
 - API DOCS:
 	- POST /api/users/{id}/check
