@@ -661,7 +661,7 @@ function insertCopy(copyId){
     var price = document.getElementById("price").value;
 
     //new copy
-    if(copyId ==""){
+    if(copyId =="false"){
         fetch("/api/copies/?token="+getCookie("userCookie").token , {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -679,24 +679,24 @@ function insertCopy(copyId){
         .catch( error => console.error(error) );
         return;
     }
+    else {
 
-    console.log(copyId, book, owner, price);
-    
-    fetch("/api/copies/" + copyId + "?token="+getCookie("userCookie").token , {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ book: book, owner: owner, price: price})
-    })
-    .then((resp) => {
-        if(resp.status==200){
-            console.log(resp);
-            window.alert('Copia modificata correttamente');
-            return;
-        }else{
-            window.alert('Error '+resp.status);
-        }
-    })
-    .catch( error => console.error(error) );
+        fetch("/api/copies/" + copy + "?token="+getCookie("userCookie").token , {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ book: book, owner: owner, price: price})
+        })
+        .then((resp) => {
+            if(resp.status==200){
+                console.log(resp);
+                window.alert('Copia modificata correttamente');
+                return;
+            }else{
+                window.alert('Error '+resp.status);
+            }
+        })
+        .catch( error => console.error(error) );
+    }
     
 };
 

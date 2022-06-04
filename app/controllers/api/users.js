@@ -180,7 +180,6 @@ router.post('/:id/reservations', auth, is_logged_user, async function(req, res) 
                             res.status(200).json({status: 200, message: "Book reserved successfully"})
                         }
                     })
-                    await Copy.findOneAndUpdate({_id: copy._id}, { buyer: req.user.id }, {new:true}, async function (err, result) {})
                 } else
                     res.status(404).json({status: 404, message: "No copies available for this book"})
             }
@@ -208,6 +207,35 @@ router.get("/:id/reservations/:rid", auth, is_logged_user, async function(req, r
     })
 });
 
+router.post("/:id/reservations/:rid", auth, is_logged_user, async function(req, res) {
+    User.findOne({_id: req.params.id}, function(err, user){
+        if(err)
+            res.status(500).json({status: 500, message: "Internal server error:" + err})
+        else if(!user)
+            res.status(404).json({status: 404, message: "User not found"})
+        else {
+            Reservation.findOne({_id: req.params.rid}, async function(err, reservation) {
+                if(err)
+                    res.status(500).json({status: 500, message: "Internal server error:" + err})
+                else if(!reservation)
+                    res.status(404).json({status: 404, message: "Reservation not found"})
+                else{
+                    Copy.findOne({_id: req.body.copy}, async function(err, copy) {
+                        if(err)
+                            res.status(500).json({status: 500, message: "Internal server error:" + err})
+                        else if(!copy)
+                            res.status(404).json({status: 404, message: "Copy not found"})
+                        else{
+                            await Copy.findOneAndUpdate({_id: copy._id}, { buyer: req.user.id }, {new:true})
+                            await Reservation.findOneAndUpdate({_id: req.params.rid}, { copy: "" }, {new:true})
+                        }
+                    })
+                }
+            })
+        }
+    })
+})
+
 router.delete("/:id/reservations/:rid", auth, is_logged_user, async function(req, res) {
 
     User.findOne({_id: req.params.id}, function(err, user){
@@ -222,16 +250,18 @@ router.delete("/:id/reservations/:rid", auth, is_logged_user, async function(req
                 else if(!reservation)
                     res.status(404).json({status: 404, message: "Reservation not found"})
                 else {
-                    Reservation.deleteOne({ _id: req.params.rid }, async function(err, result){
-                    await Copy.findOneAndUpdate({_id: copy._id}, { buyer: "" }, {new:true}, async function (err, result) {})
 
-                    await Reservation.deleteOne({ _id: req.params.rid }, async function(err, result){
-                        if(err){
-                            console.log("Internal server error while deleting reservation: "+err);
-                            res.status(500).json({status: 500, message: "Internal server error: " + err});
-                        } else {
-                            console.log("Reservation deleted");
-                            res.status(200).json({status: 200, message: "Reservation deleted"});
+                    Copy.findOne({_id: reservation.copy}, async function(err, copy){
+                        if(!copy || err){
+                            Reservation.deleteOne({ _id: req.params.rid }, async function(err, result){
+                                if(err){
+                                    console.log("Internal server error while deleting reservation: "+err);
+                                    res.status(500).json({status: 500, message: "Internal server error: " + err});
+                                } else {
+                                    console.log("Reservation deleted");
+                                    res.status(200).json({status: 200, message: "Reservation deleted"});
+                                }
+                            })
                         }
                     })
                 }

@@ -2,7 +2,7 @@
         <title>Edit Copy</title>
     </head>
     <body onload="setheader(); getCopyDetails('<%= copy %>')">
-        <div><a href="/ui/dashboard"><button class="fa fa-arrow-left" style="font-size: 20px;"> Indietro</button></a></div>
+        <div><a href="/ui/dashboard"><%- include('common/back.ejs') %></a></div>
         <br>
         <center>
             <h2>Modifica copia</h2>
