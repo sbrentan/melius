@@ -181,6 +181,7 @@ router.post('/:id/reservations', auth, is_logged_user, async function(req, res) 
                             res.status(200).json({status: 200, message: "Book reserved successfully"})
                         }
                     })
+                    await Copy.findOneAndUpdate({_id: copy._id}, { buyer: req.user.id }, {new:true}, async function (err, result) {})
                 } else
                     res.status(404).json({status: 404, message: "No copies available for this book"})
             }
@@ -222,7 +223,9 @@ router.delete("/:id/reservations/:rid", auth, is_logged_user, async function(req
                 else if(!reservation)
                     res.status(404).json({status: 404, message: "Reservation not found"})
                 else {
-                    Reservation.deleteOne({ _id: req.params.rid }, async function(err, result){
+                    await Copy.findOneAndUpdate({_id: copy._id}, { buyer: "" }, {new:true}, async function (err, result) {})
+
+                    await Reservation.deleteOne({ _id: req.params.rid }, async function(err, result){
                         if(err){
                             console.log("Internal server error while deleting reservation: "+err);
                             res.status(500).json({status: 500, message: "Internal server error: " + err});
