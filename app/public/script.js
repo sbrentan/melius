@@ -256,7 +256,8 @@ function getReservations() {
             for(var i = 0;i<data.length;i++){
                 dataRes = data[i];
                 getBook(data[i].book, function(book){
-                    document.getElementById("reservations").innerHTML+="<div class='reservationdiv'><p>"+ book.title +"</p></div>";
+                    console.log(book.title)
+                    document.getElementById("reservations").innerHTML+="<div class='reservationdiv'><p style='display: inline;'>"+ book.title +"</p><button class='delete' style='display: inline; border-radius: 5px' type='button' onclick=deleteReservation('"+ dataRes._id + "','" + book.title.replaceAll(" ", "%20") +"')>elimina prenotazione</button></div>";
                 })
             }
         }
@@ -473,7 +474,7 @@ function getUsers(containerName){
         container.innerHTML = "";
 
         return data.map(function(user) {
-            container.innerHTML += `<a href="/ui/users/${user._id}">${user.name}</a><br>`;
+            container.innerHTML += `<a class='item' href="/ui/users/${user._id}">${user.name}</a><br>`;
         })
     })
     .catch( error => console.error(error) );
@@ -566,13 +567,13 @@ function getBooksDashboard(containerName){
         container.innerHTML = "";
 
         return data.map(function(book) {
-            container.innerHTML += `<a href="/ui/books/edit/${book._id}">${book.title}</a><br>`;
+            container.innerHTML += `<a class='item' href="/ui/books/edit/${book._id}">${book.title}</a><br>`;
         })
     })
     .catch( error => console.error(error) );
 }
 
-function fillBookEdit(bookId){
+function fillBook(bookId){
 
     fetch('/api/books/'+bookId)
     .then((resp) => resp.json()) // Transform the data into json
@@ -657,7 +658,7 @@ function getCopies(containerName){
 
         return data.map(function(copy) {
             getBook(copy.book, function(tmp){
-                container.innerHTML += `<a href="/ui/copies/${copy._id}">${tmp.title}</a><br>`;
+                container.innerHTML += `<a class='item' href="/ui/copies/${copy._id}">${tmp.title}</a><br>`;
             });
         })
     })
@@ -681,6 +682,7 @@ function fillCopyEdit(copyId){
     })
     .catch( error => console.error(error) );
 }
+
 function editProfile() {
     var cookie = getCookie("userCookie");
     var name = document.getElementById("name").value;
@@ -714,18 +716,16 @@ function editProfile() {
             return;
         })
         .catch( error => console.error(error) );
-    }
-    
+    }   
 }
 
 function deleteReservation(resId,bookTitle) {
-    console.log("bobber")
 
     var id =  getCookie("userCookie").id.toString();
 
     if (id == null) return;
 
-    if(!confirm("vuoi davvero eliminare la prenotazione per '"+ bookTitle +"'"))
+    if(!confirm("Vuoi davvero eliminare la prenotazione per '"+ bookTitle.replaceAll("%20", " ") +"'"))
         return;
 
     fetch('/api/users/'+ id + "/reservations/" + resId + "?token="+getCookie("userCookie").token , {
@@ -744,9 +744,5 @@ function deleteReservation(resId,bookTitle) {
 
         return;
         
-    }).catch( error => console.error(error) );
-
-    
-    
-    
+    }).catch( error => console.error(error) );   
 }   

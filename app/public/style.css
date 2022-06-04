@@ -70,7 +70,7 @@ a {
 	text-decoration: none;
   cursor: pointer;
   transition-duration: .3s;
-  margin: 20px 0;
+  margin: 20px 5px;
 }
 
 .delete{
@@ -82,7 +82,7 @@ a {
 	text-decoration: none;
   cursor: pointer;
   transition-duration: .3s;
-  margin: 20px 0;
+  margin: 20px 5px;
 }
 
 .contact-container {
@@ -107,7 +107,7 @@ html, body {
 }
 .divider{
 	width: 100%;
-	height: 2px;
+	height: 1px;
 	background-color: #222222;
 	border: 1px solid #222222;
 }
@@ -121,7 +121,7 @@ html, body {
 }
 .indexbutton{
 	padding: 10px;
-	border: 3px solid darkgray;
+	border: 2px solid darkgray;
 	border-radius: 5px;
 }
 .dashboardcontainer{
@@ -135,7 +135,11 @@ html, body {
   max-height: 0;
 }
 .dashinnercontainter{
+	padding: 25px;
 }
 .indexreturn>a{
 	color: black;
+}
+.item:hover{
+	text-decoration: underline;
 }
