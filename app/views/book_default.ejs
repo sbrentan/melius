@@ -1,16 +1,18 @@
 <%- include('common/header.ejs') %>
         <title>Book</title>
     </head>
-    <body onload="setheader()">
-        <div><a href="/ui/books"><button class="fa fa-arrow-left" style="font-size: 20px;"> Indietro</button></a></div>
+    <body onload="fillBook('<%= book %>'); setheader()">
+        <div>
+            <a href="/ui/books"><%- include('common/back.ejs') %></a>
+        </div>
         <br>
         <center>
-            <label><b>Title: </b></label><input style="margin: 10px 0;" type="text" name="title" value='<%= book ? book.title : "" %>' readonly><br>
-            <label><b>Description: </b></label><input style="margin: 10px 0;" type="text" name="description" value='<%= book ? book.description : "" %>' readonly><br>
-            <label><b>Author: </b></label><input style="margin: 10px 0;" type="text" name="author" value='<%= book ? book.author : "" %>' readonly><br>
+            <label for="title"><b>Titolo: </b></label><input class="inputField" type="text" name="title" id="title" placeholder="Titolo" readonly><br>
+            <label for="description"><b>Descrizione: </b></label><input class="inputField" type="text" name="description" id="description" placeholder="Descrizione" readonly><br>
+            <label for="author"><b>Autore: </b></label><input class="inputField" type="text" name="author" id="author" placeholder="Autore" readonly><br>
 
             <div class="hiddenUserRole" style="width: 30%; margin: auto; margin-top: 10px;">
-                <input class="button" type="submit" value="Make a reservation" onclick="reserveBook('<%= book ? book._id : '' %>')">
+                <input class="button" type="submit" value="Prenota" onclick="reserveBook('<%= book %>')">
             </div>
         </center>
   </body>

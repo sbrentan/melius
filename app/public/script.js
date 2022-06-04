@@ -256,7 +256,8 @@ function getReservations() {
             for(var i = 0;i<data.length;i++){
                 dataRes = data[i];
                 getBook(data[i].book, function(book){
-                    document.getElementById("reservations").innerHTML+="<div class='reservationdiv'><p>"+ book.title +"</p></div>";
+                    console.log(book.title)
+                    document.getElementById("reservations").innerHTML+="<div class='reservationdiv'><p style='display: inline;'>"+ book.title +"</p><button class='delete' style='display: inline; border-radius: 5px' type='button' onclick=deleteReservation('"+ dataRes._id + "','" + book.title.replaceAll(" ", "%20") +"')>elimina prenotazione</button></div>";
                 })
             }
         }
@@ -295,70 +296,6 @@ function getCookie(cname) {
 function deleteCookie(cname){
     document.cookie = cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
-
-function insertCopy(copyId){
-
-    var book = document.getElementById("book").value;
-    var owner = document.getElementById("owner").value;
-    var price = document.getElementById("price").value;
-
-    //new copy
-    if(copyId ==""){
-        fetch("/api/copies/?token="+getCookie("userCookie").token , {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ book: book, owner: owner, price: price})
-        })
-        .then((resp) => {
-            if(resp.status==200){
-                console.log(resp);
-                window.alert('Succesfully Edited');
-                return;
-            }else{
-                window.alert('Error '+resp.status);
-            }
-        })
-        .catch( error => console.error(error) );
-        return;
-    }
-
-    console.log(copyId, book, owner, price);
-    
-    fetch("/api/copies/" + copyId + "?token="+getCookie("userCookie").token , {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ book: book, owner: owner, price: price})
-    })
-    .then((resp) => {
-        if(resp.status==200){
-            console.log(resp);
-            window.alert('Succesfully Edited');
-            return;
-        }else{
-            window.alert('Error '+resp.status);
-        }
-    })
-    .catch( error => console.error(error) );
-    
-};
-
-function purgeCopy(copyId){
-
-
-    fetch("/api/copies/" + copyId + "?token="+getCookie("userCookie").token , {
-        method: 'DELETE',
-    })
-    .then((resp) => {
-        if(resp.status==200){
-            console.log(resp);
-            window.alert('Succesfully Deleted');
-            return;
-        }else{
-            window.alert('Error '+resp.status);
-        }
-    })
-    .catch( error => console.error(error) );
-};
 
 function changePassword(){
     var oldPassword = document.getElementById("oldPassword").value;
@@ -478,7 +415,7 @@ function getUsers(containerName){
         container.innerHTML = "";
 
         return data.map(function(user) {
-            container.innerHTML += `<a href="/ui/users/${user._id}">${user.name}</a><br>`;
+            container.innerHTML += `<a class='item' href="/ui/users/${user._id}">${user.name}</a><br>`;
         })
     })
     .catch( error => console.error(error) );
@@ -571,13 +508,13 @@ function getBooksDashboard(containerName){
         container.innerHTML = "";
 
         return data.map(function(book) {
-            container.innerHTML += `<a href="/ui/books/edit/${book._id}">${book.title}</a><br>`;
+            container.innerHTML += `<a class='item' href="/ui/books/edit/${book._id}">${book.title}</a><br>`;
         })
     })
     .catch( error => console.error(error) );
 }
 
-function fillBookEdit(bookId){
+function fillBook(bookId){
 
     fetch('/api/books/'+bookId)
     .then((resp) => resp.json()) // Transform the data into json
@@ -662,99 +599,12 @@ function getCopies(containerName){
 
         return data.map(function(copy) {
             getBook(copy.book, function(tmp){
-                container.innerHTML += `<a href="/ui/copies/${copy._id}">${tmp.title}</a><br>`;
+                container.innerHTML += `<a class='item' href="/ui/copies/${copy._id}">${tmp.title}</a><br>`;
             });
         })
     })
     .catch( error => console.error(error) );
 }
-
-function fillCopyEdit(copyId){
-
-    fetch('/api/copies/'+copyId)
-    .then((resp) => resp.json()) // Transform the data into json
-    .then(function(data) { // Here you get the data to modify as you please
-        var book = document.getElementById("book");
-        var owner = document.getElementById("owner");
-        var buyer = document.getElementById("buyer");
-        var price = document.getElementById("price");
-
-        book.value = data.book;
-        owner.value = data.owner;
-        buyer.value = data.buyer;
-        price.value = data.price;
-    })
-    .catch( error => console.error(error) );
-}
-function editProfile() {
-    var cookie = getCookie("userCookie");
-    var name = document.getElementById("name").value;
-    var email = document.getElementById("email").value;
-    var id = cookie.id.toString();
-
-    if (id == null) return;
-
-    if(email == "" || name == ""){
-        
-        alert("dati non inseriti correttamente");
-        return;
-    }
-    else{
-        fetch('/api/users/'+ id + "?token="+getCookie("userCookie").token , {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: name,email: email})
-        })
-        .then((resp) => {
-    
-    
-            if(resp.status == 200){
-                alert("dati modificati correttamente")
-                location.href = ''
-            }
-            else{
-                alert("errore nella modifica dei dati")
-            }
-    
-            return;
-        })
-        .catch( error => console.error(error) );
-    }
-    
-}
-
-function deleteReservation(resId,bookTitle) {
-    console.log("bobber")
-
-    var id =  getCookie("userCookie").id.toString();
-
-    if (id == null) return;
-
-    if(!confirm("vuoi davvero eliminare la prenotazione per '"+ bookTitle +"'"))
-        return;
-
-    fetch('/api/users/'+ id + "/reservations/" + resId + "?token="+getCookie("userCookie").token , {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' }
-    })
-    .then((resp) => { return resp.json() })
-    .then(function(data) {
-        if(data.status == 200){
-            alert("prenotazione eliminata correttamente")
-            location.href = ''
-        }
-        else{
-            alert("errore nell'eliminazione")
-        }
-
-        return;
-        
-    }).catch( error => console.error(error) );
-
-    
-    
-    
-}   
 
 function getCopyDetails(copyId){
 
@@ -803,3 +653,131 @@ function getCopyDetails(copyId){
     })
     .catch( error => console.error(error) );
 }
+
+function insertCopy(copyId){
+
+    var book = document.getElementById("book").value;
+    var owner = document.getElementById("owner").value;
+    var price = document.getElementById("price").value;
+
+    //new copy
+    if(copyId ==""){
+        fetch("/api/copies/?token="+getCookie("userCookie").token , {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ book: book, owner: owner, price: price})
+        })
+        .then((resp) => {
+            if(resp.status==200){
+                console.log(resp);
+                window.alert('Succesfully Edited');
+                return;
+            }else{
+                window.alert('Error '+resp.status);
+            }
+        })
+        .catch( error => console.error(error) );
+        return;
+    }
+
+    console.log(copyId, book, owner, price);
+    
+    fetch("/api/copies/" + copyId + "?token="+getCookie("userCookie").token , {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ book: book, owner: owner, price: price})
+    })
+    .then((resp) => {
+        if(resp.status==200){
+            console.log(resp);
+            window.alert('Copia modificata correttamente');
+            return;
+        }else{
+            window.alert('Error '+resp.status);
+        }
+    })
+    .catch( error => console.error(error) );
+    
+};
+
+function purgeCopy(copyId){
+
+
+    fetch("/api/copies/" + copyId + "?token="+getCookie("userCookie").token , {
+        method: 'DELETE',
+    })
+    .then((resp) => {
+        if(resp.status==200){
+            console.log(resp);
+            window.alert('Copia eliminata correttamente');
+            location.href = "/ui/dashboard"
+        }else{
+            window.alert('Error '+resp.status);
+        }
+    })
+    .catch( error => console.error(error) );
+};
+
+function editProfile() {
+    var cookie = getCookie("userCookie");
+    var name = document.getElementById("name").value;
+    var email = document.getElementById("email").value;
+    var id = cookie.id.toString();
+
+    if (id == null) return;
+
+    if(email == "" || name == ""){
+        
+        alert("dati non inseriti correttamente");
+        return;
+    }
+    else{
+        fetch('/api/users/'+ id + "?token="+getCookie("userCookie").token , {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name,email: email})
+        })
+        .then((resp) => {
+    
+    
+            if(resp.status == 200){
+                alert("dati modificati correttamente")
+                location.href = ''
+            }
+            else{
+                alert("errore nella modifica dei dati")
+            }
+    
+            return;
+        })
+        .catch( error => console.error(error) );
+    }   
+}
+
+function deleteReservation(resId,bookTitle) {
+
+    var id =  getCookie("userCookie").id.toString();
+
+    if (id == null) return;
+
+    if(!confirm("Vuoi davvero eliminare la prenotazione per '"+ bookTitle.replaceAll("%20", " ") +"'"))
+        return;
+
+    fetch('/api/users/'+ id + "/reservations/" + resId + "?token="+getCookie("userCookie").token , {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then((resp) => { return resp.json() })
+    .then(function(data) {
+        if(data.status == 200){
+            alert("prenotazione eliminata correttamente")
+            location.href = ''
+        }
+        else{
+            alert("errore nell'eliminazione")
+        }
+
+        return;
+        
+    }).catch( error => console.error(error) );   
+}   

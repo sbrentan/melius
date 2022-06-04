@@ -2,14 +2,14 @@
 		<title>Modifica utente</title>
 	</head>
 	<body onload="fillUserEdit('<%= user %>'); setheader()">
-		<div><a href="/ui/dashboard"><button class="fa fa-arrow-left" style="font-size: 20px;"> Indietro</button></a></div>
+		<div><a href="/ui/dashboard"><%- include('common/back.ejs') %></a></div>
         <center>
     		<h2>Modifica utente</h2>
             <label for="name"><b>Nome: </b></label><input class="inputField" type="text" name="name" id="name" placeholder="Nome" required=""><br>
             <label for="email"><b>Email: </b></label><input class="inputField" type="email" name="email" id="email" placeholder="Email" required=""><br>
             <div style="width: 30%; margin: auto; margin-top: 10px;">
-                <button class="button" type="button" name="adminonly" style="margin: 0 10px;" onclick="updateUser('<%= user %>')">Modifica</button>
-                <button class="delete" name="adminonly" style="margin: 0 10px;" onclick="purgeUser('<%= user %>')">Elimina</button>
+                <button class="button" type="button" name="adminonly" onclick="updateUser('<%= user %>')">Modifica</button>
+                <button class="delete" name="adminonly" onclick="purgeUser('<%= user %>')">Elimina</button>
             </div>
         <center>
 	</body>
