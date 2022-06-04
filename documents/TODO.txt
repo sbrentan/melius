@@ -24,8 +24,7 @@
 	- add/delete/view/edit books
 	- add/delete/view/edit copies
 	- General informations?
-- add admin authentication to is_logged_user -----------------DONE
-- add is_admin to various methods
+- add admin authentication to is_logged_user
 
 - API DOCS:
 	- POST /api/users/{id}/check
