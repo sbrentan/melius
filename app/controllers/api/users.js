@@ -15,8 +15,11 @@ router.get("/", auth, is_admin, async function(req, res) {
     User.find({}, function(err, users){
         if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})
-        else
+        else{
+            for(i=0; i<users.length; i++)
+                users[i].delete("password")
             res.send(users);
+        }
     });
 });
 
@@ -60,6 +63,7 @@ router.get("/:id", auth, is_logged_user, async function(req, res) {
             if(!user)
                 res.status(404).json({status: 404, message: "User not found"})
             else {
+                delete user.password
                 res.send(user);
             }
         })

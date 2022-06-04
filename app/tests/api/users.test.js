@@ -18,7 +18,7 @@ beforeAll( async () => {
   userSpy = jest.spyOn(User, 'findOne').mockImplementation((data) => {
     console.log("-----------------------------------------------------------------------------------------")
     console.log(data)
-    if (data.id == "777" || data.email=="user@email")
+    if (data._id == "777" || data.email=="user@email")
       return new Promise((resolve, reject) => resolve({
         _id: "777",
         name: 'user name',
@@ -26,7 +26,7 @@ beforeAll( async () => {
         password: md5("userpassword"),
         role: 'user'
       }));
-    else if (data.id == "666" || data.email=="admin@email")
+    else if (data._id == "666" || data.email=="admin@email")
       return new Promise((resolve, reject) => resolve({
         _id: "666",
         name: 'admin name',
@@ -67,21 +67,7 @@ describe('before authenticating session', function () {
 
 describe('after authenticating user session', function () {
 
-  var authenticatedSession;
   var token;
-
-  /*beforeAll(function (done) {
-    testSession.post('/api/login')
-      .send({ email: 'user@email', password: 'userpassword' })
-      .expect(200)
-      .end(function (err, res) {
-        if (err) return done(err);
-        authenticatedSession = testSession;
-        token = res.body.token;
-        console.log("token is "+token)
-        return done();
-      });
-  });*/
 
   test('POST /api/login should login', function (done) {
     testSession.post('/api/login')
@@ -93,7 +79,7 @@ describe('after authenticating user session', function () {
       });
   });
 
-  /*test('GET /api/users?token=<valid> as user should return 401', function (done) {
+  test('GET /api/users?token=<valid> as user should return 401', function (done) {
     testSession.get('/api/users?token='+token)
       .expect(401)
       .end(done)
@@ -102,7 +88,7 @@ describe('after authenticating user session', function () {
     testSession.get('/api/users?token=invalid_token')
       .expect(401)
       .end(done)
-  });*/
+  });
   test('GET /api/users/777?token=<valid> should return user data', function (done) {
     testSession.get('/api/users/777?token='+token)
       .expect(200)
@@ -117,35 +103,38 @@ describe('after authenticating user session', function () {
         return done();
       });
   });
-  /*test('GET /api/users/777?token=<invalid> should return 401', function (done) {
+  test('GET /api/users/777?token=<invalid> should return 401', function (done) {
     testSession.get('/api/users?token=invalid_token')
       .expect(401)
       .end(done)
-  });*/
+  });
+
+  test('POST /api/logout should logout', function (done) {
+    testSession.post('/api/logout?token='+token)
+      .expect(200)
+      .end(done);
+  });
 
 });
 
 
-/*describe('after authenticating admin session', function () {
 
-  var authenticatedSession;
+describe('after authenticating admin session', function () {
+
   var token;
 
-  beforeAll(function (done) {
+  test('POST /api/login should login', function (done) {
     testSession.post('/api/login')
       .send({ email: 'admin@email', password: 'adminpassword' })
       .expect(200)
-      .end(function (err, res) {
-        if (err) return done(err);
-        authenticatedSession = testSession;
+      .end(function(err, res){
         token = res.body.token;
-        console.log("token is "+token)
         return done();
       });
   });
 
   test('GET /api/users?token=<valid> as admin should return users', function (done) {
-    authenticatedSession.get('/api/users?token='+token)
+    testSession.get('/api/users?token='+token)
       .expect(200)
       .end(done)
   });
@@ -155,7 +144,7 @@ describe('after authenticating user session', function () {
       .end(done)
   });
   test('GET /api/users/777?token=<valid> should return user data', function (done) {
-    testSession.get('/api/users?token='+token)
+    testSession.get('/api/users/777?token='+token)
       .expect(200)
       .end(function (err, res) {
         if (err) return done(err);
@@ -175,101 +164,3 @@ describe('after authenticating user session', function () {
   });
 
 });
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//var request_app = session(app)
-//request_app = request(app)
-
-/*beforeEach(function () {
-  test_session = session(app)
-});
-
-jest.setTimeout(2000)
-describe('GET /api/users', () => {
-
-  // Moking User.findOne method
-  let userSpy;
-
-  let token;
-
-  beforeAll( async () => {
-    jest.unmock('mongoose');
-    connection = await  mongoose.connect("mongodb://localhost:27017/melius", {useNewUrlParser: true, useUnifiedTopology: true});
-    const User = require('../../models/user');
-    userSpy = jest.spyOn(User, 'findOne').mockImplementation((data) => {
-      console.log("-----------------------------------------------------------------------------------------")
-      console.log(data)
-      if (data.id == "777" || data.email=="user@email")
-        return new Promise((resolve, reject) => resolve({
-          _id: "777",
-          name: 'user name',
-          email: 'user@email',
-          password: md5("userpassword"),
-          role: 'user'
-        }));
-      else
-        return new Promise((resolve, reject) => resolve({}));
-    });
-
-    test_session
-      .post("/api/login")
-      .set('Content-type', 'application/json')
-      .send({ email: "user@email", password: "userpassword"})
-      .end((err, res) => {
-        console.log("sciao belo ---------------------------------------")
-        console.log(res.body.token)
-        token = res.body.token
-        authenticated_session = test_session
-      })
-  });
-
-  afterAll(async () => {
-    request_app
-      .post("/api/logout?token="+token)
-      .set('Content-type', 'application/json')
-      .send({})
-      .end((err, res) => {
-        console.log("adios belo ---------------------------------------")
-      })
-
-    mongoose.connection.close(true);
-    userSpy.mockRestore();
-  });
-  
-  test('GET /api/users with no token should return 401', async () => {
-    const response = await request_app.get('/api/users');
-    expect(response.statusCode).toBe(401);
-  });
-
-  test('GET /api/users?token=<invalid> should return 401', async () => {
-    const response = await request_app.get('/api/users?token=123456');
-    expect(response.statusCode).toBe(401);
-  });
-      
-  test('GET /api/users/777?token=<valid> should return 200', async () => {
-    expect.assertions(1);
-    const response = await request_app.get('/api/users/777?token='+token);
-    expect(response.statusCode).toBe(200);
-  });
-
-  test('GET /api/users/777?token=<valid> should return user information', async () => {
-    expect.assertions(2);
-    const response = await request_app.get('/api/users/777?token='+token);
-    const user = response.body;
-    expect(user).toBeDefined();
-    expect(user.email).toBe('John@mail.com');
-  });
-});*/
