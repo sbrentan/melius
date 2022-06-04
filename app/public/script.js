@@ -297,57 +297,62 @@ function deleteCookie(cname){
     document.cookie = cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 }
 
-function insertCopy(_url){
-    //get the book title
-    var _book = document.getElementsByName("book")[0].value;
-    var _owner = document.getElementsByName("owner")[0].value;
-    var _buyer = document.getElementsByName("buyer")[0].value;
-    var _price = document.getElementsByName("price")[0].value;
+function insertCopy(copyId){
 
-    var url = '../../api/copies/'+_url;
-    var meth = 'POST';
-    if(_url != ""){
-        url = url + _url;
-        meth = 'PUT';
+    var book = document.getElementById("book").value;
+    var owner = document.getElementById("owner").value;
+    var price = document.getElementById("price").value;
+
+    //new copy
+    if(copyId ==""){
+        fetch("/api/copies/?token="+getCookie("userCookie").token , {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ book: book, owner: owner, price: price})
+        })
+        .then((resp) => {
+            if(resp.status==200){
+                console.log(resp);
+                window.alert('Succesfully Edited');
+                return;
+            }else{
+                window.alert('Error '+resp.status);
+            }
+        })
+        .catch( error => console.error(error) );
+        return;
     }
-    console.log(url);
 
-    fetch(url+ "?token="+getCookie("userCookie").token , {
-        method: meth,
+    console.log(copyId, book, owner, price);
+    
+    fetch("/api/copies/" + copyId + "?token="+getCookie("userCookie").token , {
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify( { book: _book, owner: _owner, buyer: _buyer , price: _price } ),
+        body: JSON.stringify({ book: book, owner: owner, price: price})
     })
     .then((resp) => {
         if(resp.status==200){
             console.log(resp);
-            if(_url != "")
-                window.alert('Succesfully Edited');
-            else
-                window.alert('Succesfully Inserted');
-            window.location.href = "../../ui/copies";
+            window.alert('Succesfully Edited');
             return;
         }else{
             window.alert('Error '+resp.status);
         }
     })
     .catch( error => console.error(error) );
-
+    
 };
 
-function purgeCopy(_url){
-    //get the book title
-    var url = "/api/copies/"+_url;
+function purgeCopy(copyId){
 
-    console.log(url);
 
-    fetch(url+ "?token="+getCookie("userCookie").token , {
+    fetch("/api/copies/" + copyId + "?token="+getCookie("userCookie").token , {
         method: 'DELETE',
     })
     .then((resp) => {
         if(resp.status==200){
             console.log(resp);
             window.alert('Succesfully Deleted');
-            window.location.href = "../../ui/copies";
             return;
         }else{
             window.alert('Error '+resp.status);
@@ -746,3 +751,51 @@ function deleteReservation(resId,bookTitle) {
         
     }).catch( error => console.error(error) );   
 }   
+
+function getCopyDetails(copyId){
+
+    // new copy
+    if (copyId == "false"){
+        fetch("/api/books/?token="+getCookie("userCookie").token , {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then((resp) => resp.json())
+        .then(function(data) {
+            console.log(data)
+            data.forEach(book => {
+                document.getElementById("book").innerHTML += "<option value='"+ book._id +"'> "+ book.title +" </option>";
+            });
+            
+        })
+        .catch( error => console.error(error) );
+        return;
+    }
+        
+
+    fetch('/api/copies/'+ copyId + "?token="+getCookie("userCookie").token , {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then((resp) => resp.json())
+    .then(function(data) {
+        console.log(data)
+
+        document.getElementById("owner").value = data.owner
+        document.getElementById("buyer").value = data.buyer
+        document.getElementById("price").value = data.price
+        
+        fetch('/api/books/'+ data.book + "?token="+getCookie("userCookie").token , {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then((resp) => resp.json())
+        .then(function(data) {
+            console.log(data)
+            document.getElementById("book").innerHTML += "<option value='"+ data._id +"'> "+ data.title +" </option>";
+            
+        })
+        .catch( error => console.error(error) );
+    })
+    .catch( error => console.error(error) );
+}
