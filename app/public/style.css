@@ -73,6 +73,18 @@ a {
   margin: 20px 0;
 }
 
+.delete{
+	background-color: red;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  display: inline-block;
+	text-decoration: none;
+  cursor: pointer;
+  transition-duration: .3s;
+  margin: 20px 0;
+}
+
 .contact-container {
   margin: 100px;
   padding: 20px;

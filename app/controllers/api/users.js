@@ -97,7 +97,7 @@ router.delete("/:id", auth, is_logged_user, function(req, res) {
     User.findOne({_id: req.params.id}, async function(err, result){
         if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})
-        else if(!user)
+        else if(!result)
             res.status(404).json({status: 404, message: "User not found"})
         else {
             User.deleteOne({ _id: result._id }, function(err, result){

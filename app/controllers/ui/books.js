@@ -12,17 +12,11 @@ router.get('/new', async function(req, res) {
 })
 
 router.get('/:id', async function(req, res) {
-    Book.findOne({_id: req.params.id}, async function(err, result) {
-        if(err)
-            res.status(404).send("Book not found")
-        else
-            console.log(result)
-            if(true){
-                res.render('book_default', {book: result});
-            }else{
-                res.render('book_edit', {book: result});
-            }
-    })
+    res.render('book_default', {book: req.params.id});
+})
+
+router.get('/edit/:id', async function(req, res) {
+    res.render('book_edit', {book: req.params.id});
 })
 
 module.exports = router
