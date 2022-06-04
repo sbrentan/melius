@@ -1,18 +1,16 @@
 <%- include('common/header.ejs') %>
         <title>Edit Copy</title>
     </head>
-    <body onload="fillCopyEdit('<%= copy %>'); setheader()">
-        <div><a href="/ui/dashboard"><button class="fa fa-arrow-left" style="font-size: 20px;"> Indietro</button></a></div>
+    <body onload="setheader();getCopyDetails('<%= copyId %>')">
+        <div><a href="/ui/books"><button class="fa fa-arrow-left" style="font-size: 20px;"> Indietro</button></a></div>
         <br>
-        <center>
-            <h2>Modifica copia</h2>
-            <label for="book"><b>Libro: </b></label><input class="inputField" type="text" name="book" id="book" placeholder="Libro" required><br>
-            <label for="owner"><b>Proprietario: </b><input class="inputField" type="text" name="owner" id="owner" placeholder="Proprietario" required><br>
-            <label for="buyer"><b>Acquirente: </b><input class="inputField" type="text" name="buyer" id="buyer" placeholder="Acquirente" required><br>
-            <label for="price"><b>Prezzo: </b><input class="inputField" type="text" name="price" id="price" placeholder="Prezzo" required><br>
+            <label>Book: </label><select id="book" required></select><br>
+            <label>Owner: </label><input type="text" id="owner" required><br>
+            <label>Buyer: </label><input type="text" id="buyer" required><br>
+            <label>Price: </label><input type="text" id="price" required><br>
             <div style="width: 30%; margin: auto; margin-top: 10px;">
-                <button class="button" type="button" name="adminonly" style="margin: 0 10px;" onclick="updateCopy('<%= copy %>')">Modifica</button>
-                <button class="delete" name="adminonly" style="margin: 0 10px;" onclick="purgeCopy('<%= copy %>')">Elimina</button>
+                <input name="adminonly" style="margin: 0 10px" type="submit" value="<%= copyId ? 'Edit' : 'Insert' %>" onclick="insertCopy('<%= copyId ? copyId : '' %>')">
+                <button name="adminonly" style="margin: 0 10px;" value="<%= copyId ? '' : 'display: none' %>" onclick="purgeCopy('<%= copyId %>')">Purge</button>
             </div>
         </center>
   </body>
