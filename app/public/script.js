@@ -22,41 +22,15 @@ function setheader() {
 
     if(getCookie("userCookie") != null){
         document.getElementById("logindiv").style.display = "None";
+        document.getElementById('signindiv').style.display = "None";
     }else{
         document.getElementById("logoutdiv").style.display = "None";
-
-    //logged both
-    document.getElementById('signindiv').classList.add("hiddenUserRole");
     }
 }
 function showHiddenElements(className){
     var elements = document.getElementsByClassName(className)
     const thingsArray = Array.from(elements)
     thingsArray.forEach(thing => thing.classList.remove(className))
-}
-
-function getUsers(){
-
-    fetch('/api/users')
-    .then((resp) => resp.json()) // Transform the data into json
-    .then(function(data) { // Here you get the data to modify as you please
-
-        return data.map(function(user) {
-
-            var container = document.getElementById('userContainer');
-            container.innerHTML += `<a href="/ui/users/${user._id}">${user.name}</a><br>`;
-        })
-    })
-    .catch( error => console.error(error) );
-}
-
-function getUser(userId){
-    fetch('/api/users/'+userId)
-    .then((resp) => resp.json()) // Transform the data into json
-    .then(function(data) { // Here you get the data to modify as you please
-        return data;
-    })
-    .catch( error => console.error(error) );
 }
 
 function login(email, password){
@@ -142,13 +116,13 @@ function getBooks(filtered){
     if(filtered)
         url = '/api/books?name=' + document.getElementById('filter').value;
     else
-        url = '/api/books'
+        url = '/api/books';
 
     fetch(url)
     .then((resp) => resp.json()) // Transform the data into json
     .then(function(data) { // Here you get the data to modify as you please
 
-        var container = document.getElementById('bookContainer');
+        var container = document.getElementById("bookContainer");
         container.innerHTML = ""
 
         return data.map(function(book) {
@@ -157,46 +131,6 @@ function getBooks(filtered){
     })
     .catch( error => console.error(error) );
 }
-
-function getCopies(){
-
-    fetch("/api/copies")
-    .then((resp) => resp.json()) // Transform the data into json
-    .then(function(data) { // Here you get the data to modify as you please
-
-        var container = document.getElementById('copiesContainer');
-        container.innerHTML = ""
-
-        return data.map(function(copy) {
-            getBook(copy.book, function(tmp){
-                container.innerHTML += `<a href="/ui/copies/${copy._id}">${tmp.title}</a><br>`;
-            });
-        })
-    })
-    .catch( error => console.error(error) );
-}
-
-function purgeBook(_url){
-    //get the book title
-    var url = "/api/books/"+_url;
-
-    console.log(url);
-
-    fetch(url+ "?token="+getCookie("userCookie").token , {
-        method: 'DELETE',
-    })
-    .then((resp) => {
-        if(resp.status==200){
-            console.log(resp);
-            window.alert('Succesfully Deleted');
-            window.location.href = "../../ui/books";
-            return;
-        }else{
-            window.alert('Error '+resp.status);
-        }
-    })
-    .catch( error => console.error(error) );
-};
 
 function reserveBook(_bookid){
     var cookie = getCookie("userCookie");
@@ -272,7 +206,7 @@ function logout(){
     .catch( error => console.error(error) ); // If there is any error you will catch them here
 }
 
-function getProfile(reservations) {
+function getProfile() {
 
     var status;
     var id = getCookie("userCookie").id.toString();
@@ -287,27 +221,18 @@ function getProfile(reservations) {
     .then(function(data) {
 
         if(status == 200){
-            if(reservations){
-                document.getElementById("email").innerText = data.email;
-                document.getElementById("name").innerText = data.name;
-            }
-            else{
-                document.getElementById("email").value = data.email;
-                document.getElementById("name").value = data.name;
-            }
-            
+            document.getElementById("profileInfo").innerHTML+="<p>"+ data.email +"</p><p>"+ data.name +"</p>";
         }
-        if(!reservations)
-            return;
-            
         getReservations();
+        return;
     })
     .catch( error => console.log(status));//console.error(error) ); // If there is any error you will catch them here
 }
 
 function getReservations() {
-    var status,dataRes;
+    var status;
     var id = getCookie("userCookie").id.toString();
+
     if (id == null) return;
 
     fetch('/api/users/'+ id + "/reservations?token="+getCookie("userCookie").token , {
@@ -318,11 +243,10 @@ function getReservations() {
     .then(function(data) {
 
         if(status == 200){
-            
+            console.log(data);
             for(var i = 0;i<data.length;i++){
-                dataRes = data[i];
                 getBook(data[i].book, function(book){
-                    document.getElementById("reservations").innerHTML+="<div class='reservationdiv'><p>"+ book.title +"</p><button class=\"button\" type=\"button\" onclick=\"deleteReservation('"+ dataRes._id + "','" + book.title +"')\">elimina prenotazione</button></div>";
+                    document.getElementById("reservations").innerHTML+="<div class='reservationdiv'><p>"+ book.title +"</p></div>";
                 })
             }
         }
@@ -457,7 +381,6 @@ function changePassword(){
     
             if(resp.status == 200){
                 alert("password modificata correttamente")
-                location.href = ''
             }
             else{
                 alert("Credenziali errate")
@@ -508,85 +431,242 @@ function dashboardselected(selection) {
             document.getElementById("usercontainer").classList.remove("closed");
             document.getElementById("bookcontainer").classList.add("closed");
             document.getElementById("copycontainer").classList.add("closed");
+            getUsers("userlist");
             break;  
         case 1:
             document.getElementById("usercontainer").classList.add("closed");
             document.getElementById("bookcontainer").classList.remove("closed");
             document.getElementById("copycontainer").classList.add("closed");
+            getBooksDashboard("booklist");
             break;  
         case 2:
             document.getElementById("usercontainer").classList.add("closed");
             document.getElementById("bookcontainer").classList.add("closed");
             document.getElementById("copycontainer").classList.remove("closed");
+            getCopies("copylist");
             break;  
     }
 }
-function editProfile() {
+
+function getUsers(containerName){
+
     var cookie = getCookie("userCookie");
-    var name = document.getElementById("name").value;
-    var email = document.getElementById("email").value;
-    var id = cookie.id.toString();
 
-    if (id == null) return;
+    if (cookie.id == null) return;
 
-    if(email == "" || name == ""){
-        
-        alert("dati non inseriti correttamente");
-        return;
-    }
-    else{
-        fetch('/api/users/'+ id + "?token="+getCookie("userCookie").token , {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: name,email: email})
+    fetch('/api/users?token=' + cookie.token)
+    .then((resp) => resp.json())
+    .then(function(data) {
+
+        var container = document.getElementById(containerName);
+        container.innerHTML = "";
+
+        return data.map(function(user) {
+            container.innerHTML += `<a href="/ui/users/${user._id}">${user.name}</a><br>`;
         })
-        .then((resp) => {
-    
-    
-            if(resp.status == 200){
-                alert("dati modificati correttamente")
-                location.href = ''
-            }
-            else{
-                alert("errore nella modifica dei dati")
-            }
-    
-            return;
-        })
-        .catch( error => console.error(error) );
-    }
-    
+    })
+    .catch( error => console.error(error) );
 }
 
-function deleteReservation(resId,bookTitle) {
-    console.log("bobber")
+function fillUserEdit(userId){
 
-    var id =  getCookie("userCookie").id.toString();
+    var cookie = getCookie("userCookie");
 
-    if (id == null) return;
+    if (cookie.id == null) return;
 
-    if(!confirm("vuoi davvero eliminare la prenotazione per '"+ bookTitle +"'"))
-        return;
-
-    fetch('/api/users/'+ id + "/reservations/" + resId + "?token="+getCookie("userCookie").token , {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' }
+    fetch('/api/users/'+userId+"?token=" + cookie.token)
+    .then((resp) => resp.json()) // Transform the data into json
+    .then(function(data) { // Here you get the data to modify as you please
+        var name = document.getElementById("name");
+        var email = document.getElementById("email");
+        console.log(data);
+        name.value = data.name;
+        email.value = data.email;
     })
-    .then((resp) => { return resp.json() })
-    .then(function(data) {
-        if(data.status == 200){
-            alert("prenotazione eliminata correttamente")
-            location.href = ''
+    .catch( error => console.error(error) );
+}
+
+function updateUser(userId){
+    var new_name = document.getElementById("name").value;
+    var new_email = document.getElementById("email").value;
+    
+    var cookie = getCookie("userCookie");
+
+    if(new_name == "" || new_email == ""){   
+        alert("Campi inseriti non corretti");
+        return;
+    }
+
+    if (cookie == null) return;
+
+    fetch('/api/users/'+ userId + "?token=" + cookie.token , {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: new_name, email: new_email})
+    })
+    .then((resp) => {
+    
+        if(resp.status == 200){
+            alert("Campi modificati correttamente")
+            location.reload();
         }
         else{
-            alert("errore nell'eliminazione")
+            alert("Campi non modificati")
         }
 
         return;
-        
-    }).catch( error => console.error(error) );
+    })
+    .catch( error => console.error(error) );
+}
 
+function purgeUser(userId){
+    var url = "/api/users/"+userId;
+
+    console.log(userId);
+    var cookie = getCookie("userCookie");
+
+    if(cookie == null) return;
+
+    fetch(url+ "?token=" + cookie.token , {
+        method: 'DELETE',
+    })
+    .then((resp) => {
+        if(resp.status==200){
+            console.log(resp);
+            alert('Utente eliminato con successo');
+            location.href = "/ui/dashboard";
+            return;
+        }else{
+            alert("Libro non eliminato");
+        }
+    })
+    .catch( error => console.error(error) );
+}
+
+function getBooksDashboard(containerName){
+
+    url = '/api/books';
+
+    fetch(url)
+    .then((resp) => resp.json()) // Transform the data into json
+    .then(function(data) { // Here you get the data to modify as you please
+
+        var container = document.getElementById(containerName);
+        container.innerHTML = "";
+
+        return data.map(function(book) {
+            container.innerHTML += `<a href="/ui/books/edit/${book._id}">${book.title}</a><br>`;
+        })
+    })
+    .catch( error => console.error(error) );
+}
+
+function fillBookEdit(bookId){
+
+    fetch('/api/books/'+bookId)
+    .then((resp) => resp.json()) // Transform the data into json
+    .then(function(data) { // Here you get the data to modify as you please
+        var title = document.getElementById("title");
+        var description = document.getElementById("description");
+        var author = document.getElementById("author");
+
+        title.value = data.title;
+        description.value = data.description;
+        author.value = data.author;
+    })
+    .catch( error => console.error(error) );
+}
+
+function updateBook(bookId){
+    var new_title = document.getElementById("title").value;
+    var new_description = document.getElementById("description").value;
+    var new_author = document.getElementById("author").value;
+
+    var cookie = getCookie("userCookie");
+
+    if(new_title == "" || new_description == "" || new_author == ""){   
+        alert("Campi inseriti non corretti");
+        return;
+    }
+
+    if (cookie == null) return;
+
+    fetch('/api/books/'+ bookId + "?token=" + cookie.token , {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: new_title, description: new_description, author: new_author})
+    })
+    .then((resp) => {
     
-    
-    
-}   
+        if(resp.status == 200){
+            alert("Campi modificati correttamente")
+            location.reload();
+        }
+        else{
+            alert("Campi non modificati")
+        }
+
+        return;
+    })
+    .catch( error => console.error(error) );
+}
+
+function purgeBook(_url){
+    //get the book title
+    var url = "/api/books/"+_url;
+
+    var cookie = getCookie("userCookie");
+
+    if(cookie == null) return;
+
+    fetch(url+ "?token=" + cookie.token , {
+        method: 'DELETE',
+    })
+    .then((resp) => {
+        if(resp.status==200){
+            alert('Libro eliminato correttamente');
+            location.href = "/ui/dashboard";
+        }else{
+            alert("Libro non eliminato")
+        }
+
+        return;
+    })
+    .catch( error => console.error(error) );
+};
+
+function getCopies(containerName){
+
+    fetch("/api/copies")
+    .then((resp) => resp.json()) // Transform the data into json
+    .then(function(data) { // Here you get the data to modify as you please
+
+        var container = document.getElementById(containerName);
+        container.innerHTML = ""
+
+        return data.map(function(copy) {
+            getBook(copy.book, function(tmp){
+                container.innerHTML += `<a href="/ui/copies/${copy._id}">${tmp.title}</a><br>`;
+            });
+        })
+    })
+    .catch( error => console.error(error) );
+}
+
+function fillCopyEdit(copyId){
+
+    fetch('/api/copies/'+copyId)
+    .then((resp) => resp.json()) // Transform the data into json
+    .then(function(data) { // Here you get the data to modify as you please
+        var book = document.getElementById("book");
+        var owner = document.getElementById("owner");
+        var buyer = document.getElementById("buyer");
+        var price = document.getElementById("price");
+
+        book.value = data.book;
+        owner.value = data.owner;
+        buyer.value = data.buyer;
+        price.value = data.price;
+    })
+    .catch( error => console.error(error) );
+}
