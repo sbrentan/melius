@@ -46,6 +46,7 @@ router.get('/:id', async function(req, res){
 })
 
 router.put('/:id', auth, async function(req, res){
+	console.log(req)
     Copy.findOne({_id: req.params.id}, async function(err, copy) {
     	if(err)
 			res.status(500).json({status: 500, message: "Internal server error: " + err})
@@ -64,6 +65,8 @@ router.put('/:id', auth, async function(req, res){
 				}
 				else{
 					console.log("Copy "+ result._id + " edited.");
+
+					console.log(update)
 					res.status(200).json({status: 200, message: "Copy edited successfully"})
 				}
 			})
