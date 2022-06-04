@@ -7,11 +7,11 @@ router.get("/", async function(req, res) {
 })
 
 router.get('/new', async function(req, res) {
-    res.render('copy_edit', {copy: false});
+    res.render('copy_edit', {copyId: false});
 })
 
 router.get('/:id', async function(req, res) {
-    res.render('copy_edit', {copy: req.params.id});
+    res.render('copy_edit', {copyId: req.params.id});
 })
 
 module.exports = router
