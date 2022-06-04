@@ -4,7 +4,7 @@ const is_admin  = require("../../middlewares/is_admin")
 const auth  	= require("../../middlewares/auth")
 const router	= express.Router();
 
-router.get('/', async function(req, res){
+router.get('/', auth, async function(req, res){
     Copy.find({}, async function(err, copies) {
     	if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})
@@ -13,7 +13,7 @@ router.get('/', async function(req, res){
     })
 })
 
-router.post('/', async function(req, res){
+router.post('/', auth, async function(req, res){
     var new_copy = new Copy({
 		book: req.body.book,
 		owner: req.body.owner,
@@ -34,7 +34,7 @@ router.post('/', async function(req, res){
 	});
 })
 
-router.get('/:id', async function(req, res){
+router.get('/:id', auth, async function(req, res){
     Copy.findOne({_id: req.params.id}, async function(err, copy) {
     	if(err)
 			res.status(500).json({status: 500, message: "Internal server error: " + err})

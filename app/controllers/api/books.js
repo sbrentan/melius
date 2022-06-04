@@ -16,8 +16,11 @@ router.get('/', async function(req, res){
 		{ "author": { "$regex": name_filter, "$options": "i" } },
 		{ "description": { "$regex": name_filter, "$options": "i" } }]
 
-	Book.find({}).or(object_filter)
-	    .then(books => {
+	books = Book.find( { $or : [ { "title": { "$regex": name_filter, "$options": "i" } },
+		{ "author": { "$regex": name_filter, "$options": "i" } },
+		{ "description": { "$regex": name_filter, "$options": "i" } } ] })
+	//console.log(books)
+	books.then(books => {
 	    	res.send(books);
 	    })
 	    .catch(error => {
@@ -47,14 +50,14 @@ router.post('/', auth, is_admin, async function(req, res){
 })
 
 router.get('/:id', async function(req, res){
-    Book.findOne({_id: req.params.id}, async function(err, book) {
-    	if(err)
-			res.status(500).json({status: 500, message: "Internal server error: " + err})
-		else if(!book)
-			res.status(404).json({status: 404, message: "Book not found"})
-		else
-    		res.send(book)
-    })
+    Book.findOne({_id: req.params.id})
+    	.then(book => {
+    		//res.status(500).json({status: 500, message: "Internal server error: " + err})
+	    	res.send(book)
+    	})
+    	.catch(error => {
+    		res.status(404).json({status: 404, message: "Book not found"})
+    	})
 })
 
 router.put('/:id', auth, is_admin, async function(req, res){
