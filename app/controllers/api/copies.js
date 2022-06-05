@@ -6,9 +6,9 @@ const auth  		= require("../../middlewares/auth")
 const router		= express.Router();
 
 router.get('/', async function(req, res){
-	filter = {}
+	filter = {buyer: ""}
 	if(req.query.book)
-		filter = {book: req.query.book}
+		filter = {book: req.query.book, buyer: ""}
     Copy.find(filter, async function(err, copies) {
     	if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})

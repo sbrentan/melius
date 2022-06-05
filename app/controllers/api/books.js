@@ -2,7 +2,6 @@ const express 		= require('express');
 const auth 			= require("../../middlewares/auth")
 const Book 			= require("../../models/book")
 const Copy 			= require("../../models/copy")
-const is_admin      = require("../../middlewares/is_admin")
 const Reservation 	= require("../../models/reservation")
 const is_admin      = require("../../middlewares/is_admin")
 const router 		= express.Router();
@@ -59,6 +58,14 @@ router.get('/:id', async function(req, res){
             book = book.toObject()
 			book.availability = copies_found - reserv_found;
 			if("__v" in book) delete book.__v;
+
+			lowest_copy = await Copy.findOne()
+		    	.where({book: book._id})
+		    	.sort('price')
+		    if(lowest_copy)
+		    	book.starting_price = lowest_copy.price;
+		   	else
+		   		book.starting_price = "?"
     		res.send(book)
 		}
     })

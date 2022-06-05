@@ -144,7 +144,7 @@ router.get("/:id/reservations", auth, is_logged_user, async function(req, res) {
         else if(!user)
             res.status(404).json({status: 404, message: "User not found"})
         else {
-            Reservation.find({user: user._id}, function(err, reservations) {
+            Reservation.find({user: user._id, copy: ""}, function(err, reservations) {
                 if(err)
                     res.status(500).json({status: 500, message: "Internal server error:" + err})
                 else
@@ -234,7 +234,9 @@ router.post("/:id/reservations/:rid", auth, is_logged_user, async function(req, 
                             res.status(404).json({status: 404, message: "Copy not found"})
                         else{
                             await Copy.findOneAndUpdate({_id: copy._id}, { buyer: req.user.id }, {new:true})
-                            await Reservation.findOneAndUpdate({_id: req.params.rid}, { copy: "" }, {new:true})
+                            await Reservation.findOneAndUpdate({_id: req.params.rid}, { copy: copy._id }, {new:true})
+                            res.status(200).json({status: 200, message: "Reservation accepted"});
+                            console.log("Accepted reservation "+reservation._id + " with copy "+copy._id)
                         }
                     })
                 }

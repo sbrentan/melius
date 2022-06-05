@@ -118,6 +118,7 @@ function reserveBook(_bookid){
         if(resp.status==200){
             console.log(resp);
             alert("Libro prenotato")
+            location.href = ""
             return;
         }else{
             window.alert('Error '+resp.status);
@@ -250,10 +251,10 @@ async function getReservations(adminPage) {
 
                     document.getElementById("reservations").innerHTML+="<div class='reservationdiv'><p style='display: inline;'>"+ bookTitle +"<button id='' class='delete' style='display: inline; border-radius: 5px' type='button' onclick=deleteReservation('"+ reservationId + "','" + bookTitle.replaceAll(" ", "%20") +"')>elimina</button><button class='button' id='" + btnName + "' style='display: inline; border-radius: 5px' type='button'>accetta</button></p></div>";   
                     
-                    resIds.push({reservationId,bookId})           
+                    resIds.push({reservationId,bookId})
                 }
                 else{
-                    document.getElementById("reservations").innerHTML+="<div class='reservationdiv'><p style='display: inline;'>"+ book.title +"</p><button class='delete' style='display: inline; border-radius: 5px' type='button' onclick=deleteReservation('"+ dataRes._id + "','" + book.title.replaceAll(" ", "%20") +"')>elimina prenotazione</button></div>";
+                    document.getElementById("reservations").innerHTML+="<div class='reservationdiv'><p style='display: inline;'>"+ bookTitle +"</p><button class='delete' style='display: inline; border-radius: 5px' type='button' onclick=deleteReservation('"+ reservationId + "','" + bookTitle.replaceAll(" ", "%20") +"')>elimina prenotazione</button></div>";
                 }
             }
             if (adminPage) {
@@ -261,11 +262,11 @@ async function getReservations(adminPage) {
                     document.getElementById("btn"+resIds[i]['reservationId']).onclick = function() {
                         document.getElementById("modal"+resIds[i]['reservationId']).style.display = "block";
     
-                        fetch("/api/copies?=" + resIds[i]['bookId'] + "&?token="+getCookie("userCookie").token)
+                        fetch("/api/copies?book=" + resIds[i]['bookId'] + "&?token="+getCookie("userCookie").token)
                         .then((resp) => resp.json())
                         .then(function(data) {
                             data.forEach(copy => {
-                                document.getElementById("select"+resIds[i]['reservationId']).innerHTML += "<option value='"+ copy._id +" [" + copy.price + "]'>" + copy._id +" [" + copy.price + "]</option>";
+                                document.getElementById("select"+resIds[i]['reservationId']).innerHTML += "<option value='"+ copy._id + "'> ID: " + copy.id +" [" + copy.price + " €]</option>";
                             });
                         })
                         .catch( error => console.error(error) );
@@ -289,7 +290,7 @@ function acceptReservation(reservationId) {
 
     var copyId = document.getElementById("select"+reservationId).value
 
-    fetch('/api/' + cookie.id + "/reservations/" + reservationId + "?token="+ cookie.token , {
+    fetch('/api/users/' + cookie.id + "/reservations/" + reservationId + "?token="+ cookie.token , {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ copy: copyId})
@@ -298,7 +299,7 @@ function acceptReservation(reservationId) {
     .then(function(data) {
 
         if(status == 200){
-            
+            location.href = "";
         }
     })
     .catch( error => console.log(status));
@@ -563,6 +564,8 @@ function fillBook(bookId){
         var title = document.getElementById("title");
         var description = document.getElementById("description");
         var author = document.getElementById("author");
+        var availability = document.getElementById("availability");
+        var price = document.getElementById("price");
         if(data.status==500){
             document.title="Nuovo libro";
             document.getElementById("divtitle").innerHTML="Nuovo libro";
@@ -571,6 +574,11 @@ function fillBook(bookId){
             title.value = data.title;
             description.value = data.description;
             author.value = data.author;
+            availability.value = data.availability;
+            if(data.availability == 0 || data.availability<0)
+                price.value = "-"
+            else
+                price.value = data.starting_price;
         }
     })
     .catch( error => console.error(error) );
@@ -682,7 +690,6 @@ function getCopyDetails(copyId){
         })
         .then((resp) => resp.json())
         .then(function(data) {
-            console.log(data)
             data.forEach(book => {
                 document.getElementById("book").innerHTML += "<option value='"+ book._id +"'> "+ book.title +" </option>";
             });
@@ -703,9 +710,7 @@ function getCopyDetails(copyId){
     })
     .then((resp) => resp.json())
     .then(function(data) {
-        console.log(data)
         document.getElementById("owner").value = data.owner
-        document.getElementById("buyer").value = data.buyer
         document.getElementById("price").value = data.price
         
         fetch('/api/books/'+ data.book + "?token="+getCookie("userCookie").token , {

@@ -29,6 +29,21 @@
 - add is_admin to various methods
 - change new copies button to new copy and message
 
+- starting price displayed in book
+
+
+
+################### NEW
+
+- check input in api functions: book.owner/buyer
+- error handling
+- user delete confirmation
+- user select in new copy
+- adjust back button in dashboard
+
+
+
+
 - API DOCS:
 	- POST /api/users/{id}/check
 	- POST /api/contacts
