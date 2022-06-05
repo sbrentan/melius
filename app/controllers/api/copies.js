@@ -5,12 +5,13 @@ const auth  	= require("../../middlewares/auth")
 const router	= express.Router();
 
 router.get('/', auth, async function(req, res){
-    Copy.find({}, async function(err, copies) {
-    	if(err)
-            res.status(500).json({status: 500, message: "Internal server error:" + err})
-        else
-            res.send(copies);
-    })
+    Copy.find({})
+    	.then(copies => {
+    		res.send(copies)
+    	})
+    	.catch(err => {
+    		res.status(500).json({status: 500, message: "Internal server error:" + err})
+    	})
 })
 
 router.post('/', auth, async function(req, res){
@@ -35,14 +36,16 @@ router.post('/', auth, async function(req, res){
 })
 
 router.get('/:id', auth, async function(req, res){
-    Copy.findOne({_id: req.params.id}, async function(err, copy) {
-    	if(err)
-			res.status(500).json({status: 500, message: "Internal server error: " + err})
-		else if(!copy)
-			res.status(404).json({status: 404, message: "Copy not found"})
-		else
-    		res.send(copy)
-    })
+    Copy.findOne({_id: req.params.id})
+    	.then(copy => {
+    		if(!copy)
+				res.status(404).json({status: 404, message: "Copy not found"})
+			else
+	    		res.send(copy)
+    	})
+    	.catch(err => {
+    		res.status(500).json({status: 500, message: "Internal server error: " + err})
+    	})
 })
 
 router.put('/:id', auth, async function(req, res){

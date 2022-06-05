@@ -15,33 +15,40 @@ beforeAll( async () => {
   jest.unmock('mongoose');
   connection = await  mongoose.connect(config.db_url, {useNewUrlParser: true, useUnifiedTopology: true});
   const User = require('../../models/user');
+
+  nadmin_user = {
+    _id: "777",
+    name: 'user name',
+    email: 'user@email',
+    password: md5("userpassword"),
+    role: 'user'
+  }
+  admin_user = {
+    _id: "666",
+    name: 'admin name',
+    email: 'admin@email',
+    password: md5("adminpassword"),
+    role: 'admin'
+  }
+
   userSpy = jest.spyOn(User, 'findOne').mockImplementation((data) => {
-    console.log("-----------------------------------------------------------------------------------------")
-    console.log(data)
     if (data._id == "777" || data.email=="user@email")
-      return new Promise((resolve, reject) => resolve({
-        _id: "777",
-        name: 'user name',
-        email: 'user@email',
-        password: md5("userpassword"),
-        role: 'user'
-      }));
+      return new Promise((resolve, reject) => resolve(nadmin_user));
     else if (data._id == "666" || data.email=="admin@email")
-      return new Promise((resolve, reject) => resolve({
-        _id: "666",
-        name: 'admin name',
-        email: 'admin@email',
-        password: md5("adminpassword"),
-        role: 'admin'
-      }));
+      return new Promise((resolve, reject) => resolve(admin_user));
     else
       return new Promise((resolve, reject) => resolve());
   });
+
+  usersSpy = jest.spyOn(User, 'find').mockImplementation((data) => {
+    return new Promise((resolve, reject) => resolve([nadmin_user, admin_user]));
+    });
 });
 
 afterAll(async () => {
   mongoose.connection.close(true);
   userSpy.mockRestore();
+  usersSpy.mockRestore();
 });
 
 
@@ -135,8 +142,19 @@ describe('after authenticating admin session', function () {
 
   test('GET /api/users?token=<valid> as admin should return users', function (done) {
     testSession.get('/api/users?token='+token)
+      .send()
       .expect(200)
-      .end(done)
+      .end(function(err, res){
+        if(res.body && res.body[0]) {
+          expect(res.body[0]).toEqual({
+              _id: "777",
+              name: 'user name',
+              email: 'user@email',
+              role: 'user'
+          });
+        }
+        return done()
+      })
   });
   test('GET /api/users?token=<invalid> should return 401', function (done) {
     testSession.get('/api/users?token=invalid_token')

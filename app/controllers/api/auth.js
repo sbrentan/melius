@@ -48,11 +48,12 @@ router.post("/login", async function(req, res) {
                     role: result.role
                 });
         }
-        })
-        .catch(err => {
-            console.log("Authentication failed");
-            res.status(500).json({status: 500, message: "Authentication failed"});
-        })
+    })
+    .catch(err => {
+        console.log(err)
+        console.log("Authentication failed");
+        res.status(500).json({status: 500, message: "Authentication failed"});
+    })
 });
 //req.params.id
 router.post("/logout", auth, async function(req, res) {

@@ -12,15 +12,15 @@ const router          = express.Router();
 
 //ottiene tutti gli utenti
 router.get("/", auth, is_admin, async function(req, res) {
-    User.find({}, function(err, users){
-        if(err)
-            res.status(500).json({status: 500, message: "Internal server error:" + err})
-        else{
+    User.find({})
+        .then(users => {
             for(i=0; i<users.length; i++)
-                users[i].delete("password")
-            res.send(users);
-        }
-    });
+                delete users[i].password
+            res.status(200).json(users)
+        })
+        .catch(err => {
+            res.status(500).json({status: 500, message: "Internal server error:" + err})
+        })
 });
 
 //crea un utente
@@ -59,7 +59,6 @@ router.get("/:id", auth, is_logged_user, async function(req, res) {
 
     User.findOne({_id: req.params.id})
         .then(user => {
-            console.log(user)
             if(!user)
                 res.status(404).json({status: 404, message: "User not found"})
             else {
