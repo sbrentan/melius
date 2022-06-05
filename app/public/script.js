@@ -201,13 +201,15 @@ function getProfile(reservations) {
         if(!reservations)
             return;
             
-        getReservations();
+        getReservations(false);
     })
     .catch( error => console.log(status));//console.error(error) ); // If there is any error you will catch them here
 }
 
-function getReservations() {
-    var status,dataRes;
+async function getReservations(adminPage) {
+    var status,dataRes,modalName,btnName,reservationId,bookTitle,bookId;
+    var resIds = []
+
     var id = getCookie("userCookie").id.toString();
 
     if (id == null) return;
@@ -217,21 +219,89 @@ function getReservations() {
         headers: { 'Content-Type': 'application/json' },
     })
     .then((resp) => {console.log(resp);status = resp.status; return resp.json() })
-    .then(function(data) {
+    .then(async function(data) {
 
         if(status == 200){
             console.log(data);
             for(var i = 0;i<data.length;i++){
-                dataRes = data[i];
-                getBook(data[i].book, function(book){
-                    console.log(book.title)
+                reservationId = data[i]._id
+                console.log(i)
+
+                data_book = await fetch('/api/books/'+ data[i].book)
+                .then((resp) => resp.json()) // Transform the data into json
+                .catch( error => console.error(error) );
+
+                bookTitle = data_book.title
+                bookId = data_book._id
+
+                if (adminPage) {
+                    btnName = "btn"+reservationId;
+                    modalName = "modal"+reservationId;
+
+                    document.getElementById("modals").innerHTML+=`<div id=\"` + modalName + `\" class="modal">
+
+                    <div class="modal-content">
+                        <span id='close` + reservationId + `' class="close">&times;</span>
+                        <select id="select` + reservationId + `"></select>
+                        <button id="confermAccept` + reservationId + `" class="button" type="button" onclick="acceptReservation('` + reservationId +`')">accetta</button>
+                    </div>
+                    
+                    </div>`;
+
+                    document.getElementById("reservations").innerHTML+="<div class='reservationdiv'><p style='display: inline;'>"+ bookTitle +"<button id='' class='delete' style='display: inline; border-radius: 5px' type='button' onclick=deleteReservation('"+ reservationId + "','" + bookTitle.replaceAll(" ", "%20") +"')>elimina</button><button class='button' id='" + btnName + "' style='display: inline; border-radius: 5px' type='button'>accetta</button></p></div>";   
+                    
+                    resIds.push({reservationId,bookId})           
+                }
+                else{
                     document.getElementById("reservations").innerHTML+="<div class='reservationdiv'><p style='display: inline;'>"+ book.title +"</p><button class='delete' style='display: inline; border-radius: 5px' type='button' onclick=deleteReservation('"+ dataRes._id + "','" + book.title.replaceAll(" ", "%20") +"')>elimina prenotazione</button></div>";
-                })
+                }
+            }
+            if (adminPage) {
+                for (let i = 0; i < resIds.length; i++) {
+                    document.getElementById("btn"+resIds[i]['reservationId']).onclick = function() {
+                        document.getElementById("modal"+resIds[i]['reservationId']).style.display = "block";
+    
+                        fetch("/api/copies?=" + resIds[i]['bookId'] + "&?token="+getCookie("userCookie").token)
+                        .then((resp) => resp.json())
+                        .then(function(data) {
+                            data.forEach(copy => {
+                                document.getElementById("select"+resIds[i]['reservationId']).innerHTML += "<option value='"+ copy._id +" [" + copy.price + "]'>" + copy._id +" [" + copy.price + "]</option>";
+                            });
+                        })
+                        .catch( error => console.error(error) );
+                    }
+    
+                    document.getElementById('close'+resIds[i]['reservationId']).onclick = function() {
+                        document.getElementById("modal"+resIds[i]['reservationId']).style.display = "none";
+                    }
+                    
+                }
             }
         }
         return;
     })
     .catch( error => console.error(error) ); // If there is any error you will catch them here
+}
+
+function acceptReservation(reservationId) {
+    var status;
+    var cookie = getCookie("userCookie")
+
+    var copyId = document.getElementById("select"+reservationId).value
+
+    fetch('/api/' + cookie.id + "/reservations/" + reservationId + "?token="+ cookie.token , {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ copy: copyId})
+    })
+    .then((resp) => {console.log(resp);status = resp.status; return resp.json() })
+    .then(function(data) {
+
+        if(status == 200){
+            
+        }
+    })
+    .catch( error => console.log(status));
 }
 
 function setCookie(cname, cvalue) {
@@ -406,6 +476,8 @@ function fillUserEdit(userId){
         email.value = data.email;
     })
     .catch( error => console.error(error) );
+
+    getReservations(true);
 }
 
 function updateUser(userId){
