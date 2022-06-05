@@ -11,6 +11,7 @@ function getUserStatus() {
         console.log("admin")
     }
     else{
+        document.getElementById
         showHiddenElements("hiddenUserRole")
         console.log("logged user")
     }
@@ -19,12 +20,16 @@ function getUserStatus() {
 function setheader() {
     
     getUserStatus();
+    var cookie =getCookie("userCookie");
 
-    if(getCookie("userCookie") != null){
+    if(cookie != null){
         document.getElementById("logindiv").style.display = "None";
         document.getElementById('signindiv').style.display = "None";
     }else{
         document.getElementById("logoutdiv").style.display = "None";
+    }
+    if(cookie.role != "admin"){
+        document.getElementById("header").classList.add("userheader");
     }
 }
 function showHiddenElements(className){
@@ -65,43 +70,6 @@ function login(email, password){
 
 };
 
-function insertBook(_url){
-    //get the book title
-    var _title = document.getElementsByName("title")[0].value;
-    var _description = document.getElementsByName("description")[0].value;
-    var _author = document.getElementsByName("author")[0].value;
-    console.log(_title);
-
-    var url = '../../api/books/';
-    var meth = 'POST';
-    if(_url != ""){
-        url = url + _url;
-        meth = 'PUT';
-    }
-    console.log(url);
-
-    fetch(url+ "?token="+getCookie("userCookie").token , {
-        method: meth,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify( { title: _title, description: _description, author: _author } ),
-    })
-    .then((resp) => {
-        console.log(resp);
-        if(resp.status==200){
-            if(_url != "")
-                window.alert('Succesfully Edited');
-            else
-                window.alert('Succesfully Inserted');
-            window.location.href = "../../ui/books";
-            return;
-        }else{
-            window.alert('Error '+resp.status);
-        }
-    })
-    .catch( error => console.error(error) );
-
-};
-
 function getBook(bookId, callback){
     fetch('/api/books/'+ bookId)
     .then((resp) => resp.json()) // Transform the data into json
@@ -126,7 +94,7 @@ function getBooks(filtered){
         container.innerHTML = ""
 
         return data.map(function(book) {
-            container.innerHTML += `<a class='book' href="/ui/books/${book._id}"><p>${book.title}</p><br>${book.author}</a>`;
+            container.innerHTML += `<a class='book' href="/ui/books/${book._id}"><p>${book.title}</p>${book.author}</a>`;
         })
     })
     .catch( error => console.error(error) );
@@ -138,7 +106,7 @@ function reserveBook(_bookid){
 
     //get the book title
     console.log(cookie.id)
-    var url = '../../api/users/'+ cookie.id +'/reservations';
+    var url = '/api/users/'+ cookie.id +'/reservations';
 
 
     fetch(url + "?token=" + cookie.token , {
@@ -379,22 +347,23 @@ function askInfo(){
 }
 
 function dashboardselected(selection) {
+    location.hash = "#"+selection;
     switch(selection){
         case 0:
             document.getElementById("usercontainer").classList.remove("closed");
-            document.getElementById("bookcontainer").classList.add("closed");
+            document.getElementById("bookdashcontainer").classList.add("closed");
             document.getElementById("copycontainer").classList.add("closed");
             getUsers("userlist");
             break;  
         case 1:
             document.getElementById("usercontainer").classList.add("closed");
-            document.getElementById("bookcontainer").classList.remove("closed");
+            document.getElementById("bookdashcontainer").classList.remove("closed");
             document.getElementById("copycontainer").classList.add("closed");
             getBooksDashboard("booklist");
             break;  
         case 2:
             document.getElementById("usercontainer").classList.add("closed");
-            document.getElementById("bookcontainer").classList.add("closed");
+            document.getElementById("bookdashcontainer").classList.add("closed");
             document.getElementById("copycontainer").classList.remove("closed");
             getCopies("copylist");
             break;  
@@ -415,7 +384,7 @@ function getUsers(containerName){
         container.innerHTML = "";
 
         return data.map(function(user) {
-            container.innerHTML += `<a class='item' href="/ui/users/${user._id}">${user.name}</a><br>`;
+            container.innerHTML += `<a class='item' href="/ui/users/${user._id}">${user.name}</a>`;
         })
     })
     .catch( error => console.error(error) );
@@ -460,8 +429,8 @@ function updateUser(userId){
     .then((resp) => {
     
         if(resp.status == 200){
-            alert("Campi modificati correttamente")
-            location.reload();
+            alert("Campi modificati correttamente");
+            window.location.href="/ui/dashboard#0";
         }
         else{
             alert("Campi non modificati")
@@ -487,7 +456,7 @@ function purgeUser(userId){
         if(resp.status==200){
             console.log(resp);
             alert('Utente eliminato con successo');
-            location.href = "/ui/dashboard";
+            location.href = "/ui/dashboard#0";
             return;
         }else{
             alert("Libro non eliminato");
@@ -508,7 +477,7 @@ function getBooksDashboard(containerName){
         container.innerHTML = "";
 
         return data.map(function(book) {
-            container.innerHTML += `<a class='item' href="/ui/books/edit/${book._id}">${book.title}</a><br>`;
+            container.innerHTML += `<a class='item' href="/ui/books/edit/${book._id}">${book.title}</a>`;
         })
     })
     .catch( error => console.error(error) );
@@ -522,10 +491,15 @@ function fillBook(bookId){
         var title = document.getElementById("title");
         var description = document.getElementById("description");
         var author = document.getElementById("author");
-
-        title.value = data.title;
-        description.value = data.description;
-        author.value = data.author;
+        if(data.status==500){
+            document.title="Nuovo libro";
+            document.getElementById("divtitle").innerHTML="Nuovo libro";
+            document.getElementById("confbutton").innerHTML="Crea";
+        }else{
+            title.value = data.title;
+            description.value = data.description;
+            author.value = data.author;
+        }
     })
     .catch( error => console.error(error) );
 }
@@ -543,25 +517,45 @@ function updateBook(bookId){
     }
 
     if (cookie == null) return;
-
-    fetch('/api/books/'+ bookId + "?token=" + cookie.token , {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: new_title, description: new_description, author: new_author})
-    })
-    .then((resp) => {
-    
-        if(resp.status == 200){
-            alert("Campi modificati correttamente")
-            location.reload();
-        }
-        else{
-            alert("Campi non modificati")
-        }
-
+    if(bookId =="false"){
+        fetch("/api/books/?token="+getCookie("userCookie").token , {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: new_title, description: new_description, author: new_author})
+        })
+        .then((resp) => {
+            if(resp.status==200){
+                console.log(resp);
+                window.alert('Libro creato correttamente');
+                window.location.href="/ui/dashboard#1";
+                return;
+            }else{
+                window.alert('Error '+resp.status);
+            }
+        })
+        .catch( error => console.error(error) );
         return;
-    })
-    .catch( error => console.error(error) );
+    }
+    else {
+        fetch('/api/books/'+ bookId + "?token=" + cookie.token , {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title: new_title, description: new_description, author: new_author})
+        })
+        .then((resp) => {
+        
+            if(resp.status == 200){
+                alert("Campi modificati correttamente")
+                window.location.href="/ui/dashboard#1";
+            }
+            else{
+                alert("Campi non modificati")
+            }
+
+            return;
+        })
+        .catch( error => console.error(error) );
+    }
 }
 
 function purgeBook(_url){
@@ -578,7 +572,7 @@ function purgeBook(_url){
     .then((resp) => {
         if(resp.status==200){
             alert('Libro eliminato correttamente');
-            location.href = "/ui/dashboard";
+            location.href = "/ui/dashboard#1";
         }else{
             alert("Libro non eliminato")
         }
@@ -599,7 +593,7 @@ function getCopies(containerName){
 
         return data.map(function(copy) {
             getBook(copy.book, function(tmp){
-                container.innerHTML += `<a class='item' href="/ui/copies/${copy._id}">${tmp.title}</a><br>`;
+                container.innerHTML += `<a class='item' href="/ui/copies/${copy._id}">${tmp.title}</a>`;
             });
         })
     })
@@ -620,6 +614,10 @@ function getCopyDetails(copyId){
             data.forEach(book => {
                 document.getElementById("book").innerHTML += "<option value='"+ book._id +"'> "+ book.title +" </option>";
             });
+            document.title="Nuova Copia";
+            document.getElementById("divtitle").innerHTML="Nuova Copia";
+            document.getElementById("confbutton").innerHTML="Crea";
+
             
         })
         .catch( error => console.error(error) );
@@ -634,7 +632,6 @@ function getCopyDetails(copyId){
     .then((resp) => resp.json())
     .then(function(data) {
         console.log(data)
-
         document.getElementById("owner").value = data.owner
         document.getElementById("buyer").value = data.buyer
         document.getElementById("price").value = data.price
@@ -670,7 +667,8 @@ function insertCopy(copyId){
         .then((resp) => {
             if(resp.status==200){
                 console.log(resp);
-                window.alert('Succesfully Edited');
+                window.alert('Copia creata correttamente');
+                window.location.href="/ui/dashboard#2";
                 return;
             }else{
                 window.alert('Error '+resp.status);
@@ -681,7 +679,7 @@ function insertCopy(copyId){
     }
     else {
 
-        fetch("/api/copies/" + copy + "?token="+getCookie("userCookie").token , {
+        fetch("/api/copies/" + copyId + "?token="+getCookie("userCookie").token , {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ book: book, owner: owner, price: price})
@@ -690,6 +688,7 @@ function insertCopy(copyId){
             if(resp.status==200){
                 console.log(resp);
                 window.alert('Copia modificata correttamente');
+                window.location.href="/ui/dashboard#2";
                 return;
             }else{
                 window.alert('Error '+resp.status);
@@ -710,7 +709,7 @@ function purgeCopy(copyId){
         if(resp.status==200){
             console.log(resp);
             window.alert('Copia eliminata correttamente');
-            location.href = "/ui/dashboard"
+            location.href = "/ui/dashboard#2"
         }else{
             window.alert('Error '+resp.status);
         }
@@ -780,4 +779,11 @@ function deleteReservation(resId,bookTitle) {
         return;
         
     }).catch( error => console.error(error) );   
-}   
+}
+function dashboardautoselect() {
+    if(isNaN(location.hash.charAt(1))){
+        dashboardselected(0);
+    }else{
+        dashboardselected(parseInt(location.hash.charAt(1)));
+    }
+}
