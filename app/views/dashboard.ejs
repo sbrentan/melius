@@ -5,9 +5,10 @@
         <script src="../../public/script.js" type="text/javascript"></script>	
 		<title>Dashboard</title>
 	</head>
-	<body onload="getUserStatus()">
+	<body onload="getUserStatus();dashboardautoselect();">
 		<div class="dashboardcontainer">
 		<div class="dashboardindex">
+			<button class="indexreturn indexbutton"><a href="/ui">Home</a></button>
 			<div class="indextitle">DashBoard</div>
 			<div class="divider"></div>
 			<button class="indexbutton" onclick="dashboardselected(0)">Users</button>
@@ -16,21 +17,23 @@
 			<div class="divider"></div>
 			<button class="indexbutton" onclick="dashboardselected(2)">Copies</button>
 			<div class="divider"></div>
-			<button class="indexreturn indexbutton"><a href="/ui">Home</a></button>
 		</div>
 		<div>
 			<div class="dashinnercontainter" id="usercontainer">
-				<div id="userlist">
+				<div class="dashtitle">Utenti</div>
+				<div id="userlist" class="dashtable">
 				</div>
 			</div>
-			<div class="dashinnercontainter closed" id="bookcontainer">
-				<a href="/ui/books/new">New book</a><br><br>
-				<div id="booklist" class="bookContainer">
+			<div class="dashinnercontainter closed" id="bookdashcontainer">
+				<div class="dashtitle">Libri</div>
+				<a href="/ui/books/new" class="indexbutton newbutton">New book</a>
+				<div id="booklist" class="dashtable">
 				</div>
 			</div>
 			<div class="dashinnercontainter closed" id="copycontainer">
-				<a href="/ui/copies/new">New copy</a><br><br>
-				<div id="copylist">
+				<div class="dashtitle">Copie</div>
+				<a href="/ui/copies/new" class="indexbutton newbutton">New copy</a>
+				<div id="copylist" class="dashtable">
 				</div>
 			</div>
 		</div>
