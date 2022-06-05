@@ -15,8 +15,13 @@ router.get("/", auth, is_admin, async function(req, res) {
     User.find({}, function(err, users){
         if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})
-        else
+        else{
+            for(i=0; i<users.length; i++){
+                users[i] = users[i].toObject();
+                if("__v" in users[i]) delete users[i].__v;
+            }
             res.send(users);
+        }
     });
 });
 
@@ -59,6 +64,8 @@ router.get("/:id", auth, is_logged_user, async function(req, res) {
         else if(!user)
             res.status(404).json({status: 404, message: "User not found"})
         else {
+            user = user.toObject();
+            if("__v" in user) delete user.__v;
             res.send(user);
         }
     })
