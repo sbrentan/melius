@@ -441,7 +441,7 @@ function dashboardselected(selection) {
     }
 }
 
-function getUsers(containerName){
+function getUsers(containerName,userId){
 
     var cookie = getCookie("userCookie");
 
@@ -450,6 +450,17 @@ function getUsers(containerName){
     fetch('/api/users?token=' + cookie.token)
     .then((resp) => resp.json())
     .then(function(data) {
+        if(containerName == "copies"){
+            console.log(data)
+            data.forEach(user => {
+                if(userId == user._id)
+                    document.getElementById("owner").innerHTML += "<option id='"+ user._id +"' value='"+ user._id +"' selected> "+ user.name +" </option>";
+                else
+                    document.getElementById("owner").innerHTML += "<option id='"+ user._id +"' value='"+ user._id +"'> "+ user.name +" </option>";
+            });
+
+            return;
+        }
 
         var container = document.getElementById(containerName);
         container.innerHTML = "";
@@ -696,21 +707,22 @@ function getCopyDetails(copyId){
             document.title="Nuova Copia";
             document.getElementById("divtitle").innerHTML="Nuova Copia";
             document.getElementById("confbutton").innerHTML="Crea";
-
+            getUsers("copies");
             
         })
         .catch( error => console.error(error) );
         return;
     }
         
-
+    var ownerId;
+    //modify
     fetch('/api/copies/'+ copyId + "?token="+getCookie("userCookie").token , {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
     })
     .then((resp) => resp.json())
     .then(function(data) {
-        document.getElementById("owner").value = data.owner
+        ownerId = data.owner
         document.getElementById("price").value = data.price
         
         fetch('/api/books/'+ data.book + "?token="+getCookie("userCookie").token , {
@@ -719,9 +731,10 @@ function getCopyDetails(copyId){
         })
         .then((resp) => resp.json())
         .then(function(data) {
-            console.log(data)
             document.getElementById("book").innerHTML += "<option value='"+ data._id +"'> "+ data.title +" </option>";
-            
+            getUsers("copies",ownerId);
+            console.log(ownerId)
+            document.getElementById("owner").value = ownerId;
         })
         .catch( error => console.error(error) );
     })
@@ -858,7 +871,7 @@ function deleteReservation(resId,bookTitle) {
     }).catch( error => console.error(error) );   
 }
 function dashboardautoselect() {
-    if(isNaN(location.hash.charAt(1))){
+   if(isNaN(location.hash.charAt(1))){
         dashboardselected(0);
     }else{
         dashboardselected(parseInt(location.hash.charAt(1)));

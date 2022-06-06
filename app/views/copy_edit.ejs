@@ -7,7 +7,7 @@
         <center>
             <h2 id="divtitle">Modifica copia</h2>
             <label for="book"><b>Libro: </b></label><select class="inputField" name="book" id="book" placeholder="Libro" required></select><br>
-            <label for="owner"><b>Proprietrio: </b></label><input class="inputField" name="owner" id="owner" placeholder="Proprietario" required><br>
+            <label for="owner"><b>Proprietrio: </b></label><select class="inputField" name="owner" id="owner" required></select><br>
             <label for="price"><b>Prezzo: <b></label><input class="inputField" name="price" id="price" placeholder="Prezzo" required><br>
             <div style="width: 30%; margin: auto; margin-top: 10px;">
                 <button class="button"  id="confbutton" name="adminonly" onclick="insertCopy('<%= copy %>')">Modifica</button>

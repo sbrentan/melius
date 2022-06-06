@@ -19,6 +19,7 @@ router.get("/", auth, is_admin, async function(req, res) {
             for(i=0; i<users.length; i++){
                 users[i] = users[i].toObject();
                 if("__v" in users[i]) delete users[i].__v;
+                delete users[i].password;
             }
             res.send(users);
         }
@@ -66,6 +67,7 @@ router.get("/:id", auth, is_logged_user, async function(req, res) {
         else {
             user = user.toObject();
             if("__v" in user) delete user.__v;
+            delete users[i].password;
             res.send(user);
         }
     })
