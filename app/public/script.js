@@ -37,7 +37,6 @@ function showHiddenElements(className){
     const thingsArray = Array.from(elements)
     thingsArray.forEach(thing => thing.classList.remove(className))
 }
-
 function login(email, password){
     var status;
     if(email == undefined || password == undefined){
@@ -74,7 +73,11 @@ function getBook(bookId, callback){
     fetch('/api/books/'+ bookId)
     .then((resp) => resp.json()) // Transform the data into json
     .then(function(data) {
-        callback(data);
+        if(data.status!=500){
+            callback(data);
+        }else{
+            alert("Errore");
+        }
     })
     .catch( error => console.error(error) );
 }
@@ -89,13 +92,16 @@ function getBooks(filtered){
     fetch(url)
     .then((resp) => resp.json()) // Transform the data into json
     .then(function(data) { // Here you get the data to modify as you please
+        if(data.status!=500){
+            var container = document.getElementById("bookContainer");
+            container.innerHTML = ""
 
-        var container = document.getElementById("bookContainer");
-        container.innerHTML = ""
-
-        return data.map(function(book) {
-            container.innerHTML += `<a class='book' href="/ui/books/${book._id}"><p>${book.title}</p>${book.author}</a>`;
-        })
+            return data.map(function(book) {
+                container.innerHTML += `<a class='book' href="/ui/books/${book._id}"><p>${book.title}</p>${book.author}</a>`;
+            })
+        }else{
+            alert("Errore");
+        }
     })
     .catch( error => console.error(error) );
 }
@@ -169,6 +175,8 @@ function logout(){
         if(status == 200){
             deleteCookie("userCookie")
             location.href = "/ui/login";
+        }else{
+            alert("Errore");
         }
         return;
     })
@@ -450,13 +458,16 @@ function getUsers(containerName){
     fetch('/api/users?token=' + cookie.token)
     .then((resp) => resp.json())
     .then(function(data) {
+        if(data.status!=500){
+            var container = document.getElementById(containerName);
+            container.innerHTML = "";
 
-        var container = document.getElementById(containerName);
-        container.innerHTML = "";
-
-        return data.map(function(user) {
-            container.innerHTML += `<a class='item' href="/ui/users/${user._id}">${user.name}</a>`;
-        })
+            return data.map(function(user) {
+                container.innerHTML += `<a class='item' href="/ui/users/${user._id}">${user.name}</a>`;
+            })
+        }else{
+            alert("Errore");
+        }
     })
     .catch( error => console.error(error) );
 }
@@ -520,11 +531,8 @@ function purgeUser(userId){
     console.log(userId);
     var cookie = getCookie("userCookie");
 
-    if(cookie == null) return;
-
-    fetch(url+ "?token=" + cookie.token , {
-        method: 'DELETE',
-    })
+    if(cookie == null) return; if(!confirm("Vuoi davvero eliminare l'utente"))
+    return; fetch(url+ "?token=" + cookie.token , { method: 'DELETE', })
     .then((resp) => {
         if(resp.status==200){
             console.log(resp);
@@ -610,7 +618,7 @@ function updateBook(bookId){
                 window.location.href="/ui/dashboard#1";
                 return;
             }else{
-                window.alert('Error '+resp.status);
+                window.alert('Errore! Libro non creato');
             }
         })
         .catch( error => console.error(error) );
@@ -629,7 +637,7 @@ function updateBook(bookId){
                 window.location.href="/ui/dashboard#1";
             }
             else{
-                alert("Campi non modificati")
+                alert("Errore! Campi non modificati")
             }
 
             return;
@@ -654,7 +662,7 @@ function purgeBook(_url){
             alert('Libro eliminato correttamente');
             location.href = "/ui/dashboard#1";
         }else{
-            alert("Libro non eliminato")
+            alert("Errore! Libro non eliminato")
         }
 
         return;
@@ -748,7 +756,7 @@ function insertCopy(copyId){
                 window.location.href="/ui/dashboard#2";
                 return;
             }else{
-                window.alert('Error '+resp.status);
+                window.alert('Errore! Copia non inserita ');
             }
         })
         .catch( error => console.error(error) );
@@ -768,7 +776,7 @@ function insertCopy(copyId){
                 window.location.href="/ui/dashboard#2";
                 return;
             }else{
-                window.alert('Error '+resp.status);
+                window.alert('Errore! Copia non modificata');
             }
         })
         .catch( error => console.error(error) );
@@ -788,7 +796,7 @@ function purgeCopy(copyId){
             window.alert('Copia eliminata correttamente');
             location.href = "/ui/dashboard#2"
         }else{
-            window.alert('Error '+resp.status);
+            window.alert('Errore! Copia eliminata');
         }
     })
     .catch( error => console.error(error) );

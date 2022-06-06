@@ -2,7 +2,7 @@
 		<title>Modifica utente</title>
 	</head>
 	<body onload="fillUserEdit('<%= user %>'); setheader()">
-		<div><a href="/ui/dashboard"><%- include('common/back.ejs') %></a></div>
+		<div><%- include('common/back.ejs') %></div>
         <center>
     		<h2>Modifica utente</h2>
             <label for="name"><b>Nome: </b></label><input class="inputField" type="text" name="name" id="name" placeholder="Nome" required=""><br>
