@@ -67,7 +67,7 @@ router.get("/:id", auth, is_logged_user, async function(req, res) {
         else {
             user = user.toObject();
             if("__v" in user) delete user.__v;
-            delete users[i].password;
+            delete user.password;
             res.send(user);
         }
     })

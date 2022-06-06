@@ -127,7 +127,7 @@ function reserveBook(_bookid){
             location.href = ""
             return;
         }else{
-            window.alert('Error '+resp.status);
+            window.alert('Libro non disponibile');
         }
     })
     .catch( error => console.error(error) );
@@ -458,27 +458,25 @@ function getUsers(containerName,userId){
     fetch('/api/users?token=' + cookie.token)
     .then((resp) => resp.json())
     .then(function(data) {
+        if(containerName == "copies"){
+            console.log(data)
+            data.forEach(user => {
+                if(userId == user._id)
+                    document.getElementById("owner").innerHTML += "<option id='"+ user._id +"' value='"+ user._id +"' selected> "+ user.name +" </option>";
+                else
+                    document.getElementById("owner").innerHTML += "<option id='"+ user._id +"' value='"+ user._id +"'> "+ user.name +" </option>";
             });
-        if(data.status!=500){
-            if(containerName == "copies"){
-                console.log(data)
-                data.forEach(user => {
-                    if(userId == user._id)
-                        document.getElementById("owner").innerHTML += "<option id='"+ user._id +"' value='"+ user._id +"' selected> "+ user.name +" </option>";
-                    else
-                        document.getElementById("owner").innerHTML += "<option id='"+ user._id +"' value='"+ user._id +"'> "+ user.name +" </option>";
-                });
 
-            var container = document.getElementById(containerName);
-            container.innerHTML = "";
-
-            return data.map(function(user) {
-                container.innerHTML += `<a class='item' href="/ui/users/${user._id}">${user.name}</a>`;
-            })
-        }else{
-            alert("Errore");
+            return;
         }
-   })
+
+        var container = document.getElementById(containerName);
+        container.innerHTML = "";
+
+        return data.map(function(user) {
+            container.innerHTML += `<a class='item' href="/ui/users/${user._id}">${user.name}</a>`;
+        })
+    })
     .catch( error => console.error(error) );
 }
 
