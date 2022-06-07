@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const session  = require('supertest-session');
 const config   = require('../../../config')
 const md5      = require("md5")
-jest.setTimeout(1000)
+jest.setTimeout(5000)
 
 
 var testSession = null;

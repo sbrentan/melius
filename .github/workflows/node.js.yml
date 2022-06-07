@@ -17,6 +17,7 @@ jobs:
       SESSION_KEY: ${{ secrets.SESSION_KEY }}
       DB_URL: ${{ secrets.DB_URL }}
       PORT: ${{ secrets.PORT }}
+      CI: true
 
     strategy:
       matrix:

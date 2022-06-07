@@ -2,7 +2,7 @@ const request = require('supertest');
 const app     = require('../../app');
 const mongoose = require('mongoose');
 
-jest.setTimeout(2000)
+jest.setTimeout(5000)
 describe('GET /api/books', () => {
 
   // Moking Book.find method
