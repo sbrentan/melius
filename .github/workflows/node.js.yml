@@ -5,10 +5,12 @@ name: Node.js CI
 
   # This is used to load Environment-level secrets, from the specified environment.
   # Instead, repository secrets are loaded by default.
-  environment: production
+  environment: melius_env
   env:
-    SUPER_SECRET: ${{ secrets.SUPER_SECRET }} # Must be set as a GitHub secret
-    DB_URL: ${{ secrets.DB_URL }} # Must be set as a GitHub secret
+    SECRET_KEY: ${{ secrets.SECRET_KEY }}
+    SESSION_KEY: ${{ secrets.SESSION_KEY }}
+    DB_URL: ${{ secrets.DB_URL }}
+    PORT: ${{ secrets.PORT }}
 
 
 on:
@@ -47,5 +49,5 @@ jobs:
     # https://github.com/marketplace/actions/deploy-to-heroku#procfile-passing
       with:
         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-        heroku_app_name: "melius"
-        #heroku_email: "your-email@mail.it
+        heroku_app_name: "melius-is2"
+        heroku_email: "matteo68.mc@gmail.com"
