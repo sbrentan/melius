@@ -1,0 +1,861 @@
+---
+swagger: "2.0"
+info:
+  description: |
+    Melius API documentation
+  version: 1.2.0
+  title: Melius
+host: virtserver.swaggerhub.com
+basePath: /sbrentan/Melius/1.0.0
+tags:
+- name: users
+  description: Operations about user
+- name: book
+  description: Operations about books
+- name: copies
+  description: Operations about book copies
+schemes:
+- https
+- http
+paths:
+  /api/users:
+    get:
+      tags:
+      - users
+      summary: Returns users (for admin)
+      description: Returns users list for admin
+      operationId: getUsers
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: token
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+    post:
+      tags:
+      - users
+      summary: Create a new user
+      description: Register a new user
+      operationId: newUser
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: name
+        description: Name of the user
+        required: true
+        schema:
+          type: string
+      - in: body
+        name: email
+        description: Email of the user
+        required: true
+        schema:
+          type: string
+      - in: body
+        name: password
+        description: Password in clear text
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref: '#/definitions/ApiResponse200'
+        "400":
+          description: Bad request, missing fields or user already existing
+          schema:
+            $ref: '#/definitions/ApiResponse400'
+        "409":
+          description: User already exists
+          schema:
+            $ref: '#/definitions/ApiResponse409'
+  /api/users/{userId}:
+    get:
+      tags:
+      - users
+      summary: Find user by ID (for admin or user)
+      description: Returns a single user for admin or for the user itself
+      operationId: getUserById
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: token
+        required: true
+        schema:
+          type: string
+      - name: userId
+        in: path
+        description: ID of user to return
+        required: true
+        type: string
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/ApiResponse404'
+    put:
+      tags:
+      - users
+      summary: Updates a user( for admin)
+      description: Updates a single user for admin or for the user itself
+      operationId: updateUser
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: userId
+        in: path
+        description: ID of user that needs to be updated
+        required: true
+        type: string
+      - in: body
+        name: name
+        description: Updated name of the user
+        required: false
+        schema:
+          type: string
+      - in: body
+        name: email
+        description: Updated email of the user
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/ApiResponse404'
+    delete:
+      tags:
+      - users
+      summary: Deletes a user (for admin or user itself)
+      description: Deletes a single user with its reservations (for admin or for the user itself)
+      operationId: deleteUserById
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: token
+        required: true
+        schema:
+          type: string
+      - name: userId
+        in: path
+        description: User id to delete
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/ApiResponse200'
+        "404":
+          description: User not found
+          schema:
+            $ref: '#/definitions/ApiResponse404'
+  /api/users/{userId}/check:
+    post:
+      tags:
+      - users
+      summary: Check user password(for user or admin)
+      description: Check user password(for user or admin)
+      operationId: checkPswd
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: token
+        required: true
+        schema:
+          type: string
+      - in: body
+        name: password
+        description: Password in clear text
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref: '#/definitions/CheckPasswordResponse'
+  /api/users/{userId}/reservations:
+    get:
+      tags:
+      - users
+      summary: Get reservations for a user (for admin or user itself)
+      description: Get reservations for a user(done by the user itself or admin)
+      operationId: getReservationsForUser
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: token
+        required: true
+        schema:
+          type: string
+      - name: userId
+        in: path
+        description: ID of user
+        required: true
+        type: string
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Reservation'
+        "404":
+          description: User or Book not found
+          schema:
+            $ref: '#/definitions/ApiResponse404'
+    post:
+      tags:
+      - users
+      summary: Reserve book for a user (for admin or a logged user)
+      description: Reserve a book for a user(done by the logged user or admin)
+      operationId: reserveBookForUser
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: token
+        required: true
+        schema:
+          type: string
+      - name: userId
+        in: path
+        description: ID of user
+        required: true
+        type: string
+      - in: body
+        name: book
+        description: ID of book to reserve
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/ApiResponse200'
+        "404":
+          description: User or Book not found
+          schema:
+            $ref: '#/definitions/ApiResponse404'
+  /api/users/{userId}/reservations/{reservationId}:
+    post:
+      tags:
+      - users
+      summary: Assign copy to reservation (for admin)
+      description: Assign copy to a user reservation(done by the logged user or admin)
+      operationId: acceptReservation
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: token
+        required: true
+        schema:
+          type: string
+      - name: userId
+        in: path
+        description: ID of user
+        required: true
+        type: string
+      - in: body
+        name: copy
+        description: ID of copy to assign to reservation
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/ApiResponse200'
+        "404":
+          description: User or Book not found
+          schema:
+            $ref: '#/definitions/ApiResponse404'
+    delete:
+      tags:
+      - users
+      summary: Deletes a reservation (for admin or logged user)
+      description: Deletes a reservation, with the copy assigned if present(done by the user itself or admin)
+      operationId: deletReservationById
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: token
+        required: true
+        schema:
+          type: string
+      - name: userId
+        in: path
+        description: ID of user
+        required: true
+        type: string
+      - in: body
+        name: book
+        description: ID of book
+        required: true
+        schema:
+          type: string
+      - name: reservationId
+        in: path
+        description: ID of reservation to delete
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/ApiResponse200'
+        "404":
+          description: User or Book or Reservation not found
+          schema:
+            $ref: '#/definitions/ApiResponse404'
+  /api/books:
+    get:
+      tags:
+      - book
+      summary: Returns books
+      description: Returns books list
+      operationId: getBooks
+      produces:
+      - application/json
+      parameters:
+      - name: title
+        in: query
+        required: false
+        type: string
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Book'
+    post:
+      tags:
+      - book
+      summary: Create a new book (for admin)
+      operationId: newBook
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: title
+        description: Title of the book
+        required: true
+        schema:
+          type: string
+      - in: body
+        name: author
+        description: Author of the book
+        required: true
+        schema:
+          type: string
+      - in: body
+        name: description
+        description: Description of the book
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/ApiResponse200'
+        "400":
+          description: Bad request or missing fields
+          schema:
+            $ref: '#/definitions/ApiResponse400'
+  /api/books/{bookId}:
+    get:
+      tags:
+      - book
+      summary: Find book by ID
+      description: Returns a single book
+      operationId: geBookById
+      produces:
+      - application/json
+      parameters:
+      - name: bookId
+        in: path
+        description: ID of book to return
+        required: true
+        type: string
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref: '#/definitions/BookPlus'
+        "404":
+          description: Book not found
+          schema:
+            $ref: '#/definitions/ApiResponse404'
+    put:
+      tags:
+      - book
+      summary: Updates a book( for admin)
+      operationId: updateBook
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: bookId
+        in: path
+        description: ID of book that needs to be updated
+        required: true
+        type: string
+      - in: body
+        name: title
+        description: book new title
+        required: false
+        schema:
+          type: string
+      - in: body
+        name: author
+        description: book new author
+        required: false
+        schema:
+          type: string
+      - in: body
+        name: description
+        description: book new description
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/ApiResponse200'
+        "404":
+          description: Book not found
+          schema:
+            $ref: '#/definitions/ApiResponse404'
+    delete:
+      tags:
+      - book
+      summary: Deletes a book, doesn't delete the already present copies( for admin)
+      operationId: deletBookById
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: token
+        required: true
+        schema:
+          type: string
+      - name: bookId
+        in: path
+        description: Book id to delete
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/ApiResponse200'
+        "404":
+          description: Book not found
+          schema:
+            $ref: '#/definitions/ApiResponse404'
+  /api/copies:
+    get:
+      tags:
+      - copies
+      summary: Returns copies (for admin)
+      description: Returns copies list (for admin)
+      operationId: getCopies
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: token
+        required: true
+        schema:
+          type: string
+      - name: book
+        in: query
+        description: book id of copies to return
+        required: false
+        type: string
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Copy'
+    post:
+      tags:
+      - copies
+      summary: Create a new copy (for admin)
+      operationId: newCopy
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: user
+        description: Owner user id
+        required: true
+        schema:
+          type: string
+      - in: body
+        name: book
+        description: Book id it's referenced to
+        required: true
+        schema:
+          type: string
+      - in: body
+        name: price
+        description: Price of the copy
+        required: true
+        schema:
+          type: number
+          format: float
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/ApiResponse200'
+        "400":
+          description: Bad request or missing fields
+          schema:
+            $ref: '#/definitions/ApiResponse400'
+  /api/copies/{copyId}:
+    get:
+      tags:
+      - copies
+      summary: Find copy by ID (for admin)
+      description: Returns a single copy( for admin)
+      operationId: geCopyById
+      produces:
+      - application/json
+      parameters:
+      - name: copyId
+        in: path
+        description: ID of copy to return
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/Copy'
+        "404":
+          description: Copy not found
+          schema:
+            $ref: '#/definitions/ApiResponse404'
+    put:
+      tags:
+      - copies
+      summary: Updates a copy( for admin)
+      description: Updates a single copy( for admin)
+      operationId: updateCopy
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: copyId
+        in: path
+        description: ID of copy that needs to be updated
+        required: true
+        type: string
+      - in: body
+        name: book
+        description: Book id
+        required: false
+        schema:
+          type: string
+      - in: body
+        name: owner
+        description: Owner user id
+        required: false
+        schema:
+          type: string
+      - in: body
+        name: price
+        description: Price of the copy
+        required: false
+        schema:
+          type: number
+          format: float
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/ApiResponse200'
+        "404":
+          description: Copy not found
+          schema:
+            $ref: '#/definitions/ApiResponse404'
+    delete:
+      tags:
+      - copies
+      summary: Deletes a copy( for admin)
+      description: Deletes a single copy with the reservation linked to it( for admin)
+      operationId: deletCopyById
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: token
+        required: true
+        schema:
+          type: string
+      - name: copyId
+        in: path
+        description: Copy id to delete
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/ApiResponse200'
+        "400":
+          description: Cannot delete copy as it is already reserved
+          schema:
+            $ref: '#/definitions/ApiResponse400'
+        "404":
+          description: Copy not found
+          schema:
+            $ref: '#/definitions/ApiResponse404'
+  /api/login:
+    post:
+      tags:
+      - users
+      summary: Logs user into the system
+      operationId: loginUser
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: email
+        description: The email for login
+        required: true
+        schema:
+          type: string
+      - in: body
+        name: password
+        description: The password for login in clear text
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref: '#/definitions/ApiResponse200'
+        "400":
+          description: Invalid email/password supplied
+          schema:
+            $ref: '#/definitions/ApiResponse400'
+  /api/logout:
+    post:
+      tags:
+      - users
+      summary: Logs out current logged in user session
+      operationId: logoutUser
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: token
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: successful operation
+          schema:
+            $ref: '#/definitions/ApiResponse200'
+  /api/contacts:
+    post:
+      tags:
+      - contacts
+      summary: Send an information inquiry
+      operationId: inquiry
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: name
+        description: name of user
+        required: true
+        schema:
+          type: string
+      - in: body
+        name: surname
+        description: surname of user
+        required: true
+        schema:
+          type: string
+      - in: body
+        name: email
+        description: email of user
+        required: true
+        schema:
+          type: string
+      - in: body
+        name: subject
+        description: subject of inquiry
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful operation
+          schema:
+            $ref: '#/definitions/ApiResponse200'
+        "400":
+          description: Bad request or missing fields
+          schema:
+            $ref: '#/definitions/ApiResponse400'
+definitions:
+  Reservation:
+    type: object
+    properties:
+      _id:
+        type: string
+      book:
+        type: string
+      user:
+        type: string
+      copy:
+        type: string
+    xml:
+      name: Category
+  Copy:
+    type: object
+    properties:
+      _id:
+        type: string
+      book:
+        type: string
+      price:
+        type: number
+        format: float
+    xml:
+      name: Category
+  Book:
+    type: object
+    properties:
+      _id:
+        type: string
+      title:
+        type: string
+      author:
+        type: string
+      description:
+        type: string
+    xml:
+      name: Book
+  BookPlus:
+    type: object
+    properties:
+      _id:
+        type: string
+      title:
+        type: string
+      author:
+        type: string
+      description:
+        type: string
+      availability:
+        type: integer
+    xml:
+      name: BookPlus
+  User:
+    type: object
+    properties:
+      _id:
+        type: string
+      name:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+    xml:
+      name: User
+  CheckPasswordResponse:
+    type: object
+    properties:
+      status:
+        type: integer
+      correct:
+        type: boolean
+  ApiResponse200:
+    type: object
+    properties:
+      status:
+        type: integer
+      message:
+        type: string
+  ApiResponse400:
+    type: object
+    properties:
+      status:
+        type: integer
+      message:
+        type: string
+  ApiResponse404:
+    type: object
+    properties:
+      status:
+        type: integer
+      message:
+        type: string
+  ApiResponse409:
+    type: object
+    properties:
+      status:
+        type: integer
+      message:
+        type: string
+externalDocs:
+  description: Find out more about Melius
+  url: http://github.com/sbrentan/melius
