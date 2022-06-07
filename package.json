@@ -15,7 +15,6 @@
   "description": "Melius Web Service",
   "version": "1.0.0",
   "main": "index.js",
-  "devDependencies": {},
   "scripts": {
     "start": "node index.js",
     "start_local": "$ npm run dev",
