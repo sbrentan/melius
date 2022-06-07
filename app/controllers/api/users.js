@@ -12,18 +12,17 @@ const router          = express.Router();
 
 //ottiene tutti gli utenti
 router.get("/", auth, is_admin, async function(req, res) {
-    User.find({}, async function(err, users){
-        if(err)
-            res.status(500).json({status: 500, message: "Internal server error:" + err})
-        else{
+    User.find({})
+        .then(users => {
             for(i=0; i<users.length; i++){
-                users[i] = users[i].toObject();
+                delete users[i].password
                 if("__v" in users[i]) delete users[i].__v;
-                delete users[i].password;
             }
-            res.send(users);
-        }
-    });
+            res.status(200).json(users)
+        })
+        .catch(err => {
+            res.status(500).json({status: 500, message: "Internal server error:" + err})
+        })
 });
 
 //crea un utente
@@ -41,41 +40,43 @@ router.post('/', async function(req, res) {
         return;
     }
 
-    User.findOne({email: user.email}, async function(err, result){
-        if(err)
+    User.findOne({email: user.email})
+        .then(result => {
+            if(!result || result.length == 0){
+                //nessun utente, quindi registra
+                user.save(function (err, u) {
+                    if (err) {
+                        res.status(500).json({status: 500, message: "Internal server error:" + err})
+                    } else {
+                      console.log(u.name + " saved to user collection.");
+                      res.status(200).json({status: 200, message: "User created successfully"}) 
+                    }
+                });
+            }
+            else
+                res.status(409).json({status: 409, message: "User with that email already exists"})
+        })
+        .catch(err => {
             res.status(500).json({status: 500, message: "Internal server error:" + err})
-        else if(!result || result.length == 0){
-            //nessun utente, quindi registra
-            await user.save(function (err, u) {
-                if (err) {
-                    res.status(500).json({status: 500, message: "Internal server error:" + err})
-                } else {
-                  console.log(u.name + " saved to user collection.");
-                  res.status(200).json({status: 200, message: "User created successfully"})
-                }
-            });
-        }
-        else {
-            res.status(409).json({status: 400, message: "User with that email already exists"})
-        }
-    })
+        })
 });
 
 //ottiene utente con un certo id
 router.get("/:id", auth, is_logged_user, async function(req, res) {
 
-    User.findOne({_id: req.params.id}, async function(err, user){
-        if(err)
+    User.findOne({_id: req.params.id})
+        .then(user => {
+            if(!user)
+                res.status(404).json({status: 404, message: "User not found"})
+            else {
+                if("__v" in user) delete user.__v;
+                delete user.password
+                res.send(user);
+            }
+        })
+        .catch(err => {
             res.status(500).json({status: 500, message: "Internal server error:" + err})
-        else if(!user)
-            res.status(404).json({status: 404, message: "User not found"})
-        else {
-            user = user.toObject();
-            if("__v" in user) delete user.__v;
-            delete user.password;
-            res.send(user);
-        }
-    })
+        })
 });
 
 //modifica l'utente
@@ -208,9 +209,6 @@ router.post('/:id/reservations', auth, is_logged_user, async function(req, res) 
 
                 copies_found = await Copy.find({book: book._id, buyer: ""}).count()
                 reserv_found = await Reservation.find({book: book._id, copy: ""}).count()
-
-                console.log(copies_found)
-                console.log(reserv_found)
 
                 if(copies_found - reserv_found > 0){
                     reservation = new Reservation({

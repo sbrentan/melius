@@ -65,18 +65,20 @@ router.post('/', auth, is_admin, async function(req, res){
 	})
 })
 
-router.get('/:id', auth, is_admin, async function(req, res){
-    Copy.findOne({_id: req.params.id}, async function(err, copy) {
-    	if(err)
-			res.status(500).json({status: 500, message: "Internal server error: " + err})
-		else if(!copy)
-			res.status(404).json({status: 404, message: "Copy not found"})
-		else{
-			copy = copy.toObject();
-			if("__v" in copy) delete copy.__v;
-    		res.send(copy)
-		}
-    })
+router.get('/:id', auth, async function(req, res){
+    Copy.findOne({_id: req.params.id})
+    	.then(copy => {
+    		if(!copy)
+				res.status(404).json({status: 404, message: "Copy not found"})
+			else{
+				copy = copy.toObject();
+				if("__v" in copy) delete copy.__v;
+	    		res.send(copy)
+	    	}
+    	})
+    	.catch(err => {
+    		res.status(500).json({status: 500, message: "Internal server error: " + err})
+    	})
 })
 
 router.put('/:id', auth, is_admin, async function(req, res){

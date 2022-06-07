@@ -16,8 +16,11 @@ router.get('/', async function(req, res){
 		{ "author": { "$regex": name_filter, "$options": "i" } },
 		{ "description": { "$regex": name_filter, "$options": "i" } }]
 
-	Book.find({}).or(object_filter)
-	    .then(books => {
+	books = Book.find( { $or : [ { "title": { "$regex": name_filter, "$options": "i" } },
+		{ "author": { "$regex": name_filter, "$options": "i" } },
+		{ "description": { "$regex": name_filter, "$options": "i" } } ] })
+	//console.log(books)
+	books.then(books => {
 	    	res.send(books);
 	    })
 	    .catch(error => {

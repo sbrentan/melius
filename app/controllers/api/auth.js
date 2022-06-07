@@ -40,14 +40,19 @@ router.post("/login", async function(req, res) {
                     role: result.role
                 })
 
-            res.json({
-        		token: token,
-                id: result._id,
-        		email: user.email,
-                name: result.name,
-                role: result.role
-        	});
+                res.json({
+                    token: token,
+                    id: result._id,
+                    email: user.email,
+                    name: result.name,
+                    role: result.role
+                });
         }
+    })
+    .catch(err => {
+        console.log(err)
+        console.log("Authentication failed");
+        res.status(500).json({status: 500, message: "Authentication failed"});
     })
 });
 //req.params.id
