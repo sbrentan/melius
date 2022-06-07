@@ -46,7 +46,7 @@ jobs:
           heroku_app_name: "melius-is2"
           heroku_email: "matteo68.mc@gmail.com"
         env:
-          SECRET_KEY: ${{ secrets.SECRET_KEY }}
-          SESSION_KEY: ${{ secrets.SESSION_KEY }}
-          DB_URL: ${{ secrets.DB_URL }}
-          PORT: ${{ secrets.PORT }}
+          HD_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          HD_SESSION_KEY: ${{ secrets.SESSION_KEY }}
+          HD_DB_URL: ${{ secrets.DB_URL }}
+          HD_PORT: ${{ secrets.PORT }}
