@@ -13,6 +13,7 @@ jobs:
 
     environment: melius_env
     env:
+      HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       SESSION_KEY: ${{ secrets.SESSION_KEY }}
       DB_URL: ${{ secrets.DB_URL }}
@@ -39,8 +40,19 @@ jobs:
     needs: test
     steps:
     - uses: actions/checkout@v2
-    - uses: akhileshns/heroku-deploy@v3.12.12
-      with:
-        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-        heroku_app_name: "melius-is2"
-        heroku_email: "matteo68.mc@gmail.com"
+    # - uses: akhileshns/heroku-deploy@v3.12.12
+    #   with:
+    #     heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+    #     heroku_app_name: "melius-is2"
+    #     heroku_email: "matteo68.mc@gmail.com"
+    - run: |+
+          cat >~/.netrc <<EOF
+          machine api.heroku.com
+              login matteo68.mc@gmail.com
+              password $HEROKU_API_KEY
+          machine git.heroku.com
+              login matteo68.mc@gmail.com
+              password $HEROKU_API_KEY
+          EOF
+      - run: heroku git:remote -a https://git.heroku.com/melius-is2.git
+      - run: git push heroku
