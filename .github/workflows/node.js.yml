@@ -44,11 +44,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Add remote origin
+        run: git remote add heroku https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/melius-is2.git
+
       - name: Deploy code
-        uses: akhileshns/heroku-deploy@v3.12.11
-        with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_email: "matteo68.mc@gmail.com"
-          heroku_app_name: "melius-is2"
-          dontuseforce: true
-          dontautocreate: true
+        run: git push heroku HEAD:main -f
+        #uses: akhileshns/heroku-deploy@v3.12.12
+        #with:
+          #heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          #heroku_email: "matteo68.mc@gmail.com"
+          #heroku_app_name: "melius-is2"
+          #dontuseforce: true
+          #dontautocreate: true
