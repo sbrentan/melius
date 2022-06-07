@@ -10,7 +10,9 @@
     "md5": "^2.3.0",
     "mongodb": "^4.6.0",
     "mongoose": "^6.3.3",
-    "package.json": "^2.0.1"
+    "package.json": "^2.0.1",
+    "supertest": "^6.2.3",
+    "supertest-session": "^4.1.0"
   },
   "name": "melius",
   "description": "Melius Web Service",
