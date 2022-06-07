@@ -97,7 +97,7 @@ router.put('/:id', auth, is_admin, async function(req, res){
 				author: req.body.author,
 				image: ""
 			}
-			if(!req.body.book || !req.body.owner || !req.body.price){
+			if(!req.body.title || !req.body.description || !req.body.author){
 		        res.status(400).json({status: 400, message: "Error, empty fields"})
 		        return;
 		    }

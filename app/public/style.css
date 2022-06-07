@@ -50,6 +50,9 @@ a {
 	display: none;
 }
 
+.inputField[readonly]{
+	background-color: #eeeeee;
+}
 .inputField{
 	width: 250px;
 	padding: 12px;

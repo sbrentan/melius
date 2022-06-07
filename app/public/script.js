@@ -536,6 +536,12 @@ function updateUser(userId){
 }
 
 function purgeUser(userId){
+    var nope= false
+    var cookie = getCookie("userCookie");
+    if(!userId){
+        nope = true;
+            userId = cookie.id;
+        }
     var url = "/api/users/"+userId;
 
     console.log(userId);
@@ -548,6 +554,11 @@ function purgeUser(userId){
             console.log(resp);
             alert('Utente eliminato con successo');
             location.href = "/ui/dashboard#0";
+            if(nope){
+                window.location.href="/ui/";
+            }else{
+                window.location.href="/ui/dashboard#0";
+            }
             return;
         }else{
             alert("Errore! Utente non eliminato");
@@ -588,6 +599,7 @@ function fillBook(bookId){
             document.title="Nuovo libro";
             document.getElementById("divtitle").innerHTML="Nuovo libro";
             document.getElementById("confbutton").innerHTML="Crea";
+            document.getElementById("delbutton").style.display="None";
         }else{
             title.value = data.title;
             description.value = data.description;
@@ -718,6 +730,8 @@ function getCopyDetails(copyId){
             document.title="Nuova Copia";
             document.getElementById("divtitle").innerHTML="Nuova Copia";
             document.getElementById("confbutton").innerHTML="Crea";
+            document.getElementById("delbutton").style.display="None";
+            document.getElementById("copy_id").style.display="None";
             getUsers("copies");
             
         })
@@ -735,6 +749,7 @@ function getCopyDetails(copyId){
     .then(function(data) {
         ownerId = data.owner
         document.getElementById("price").value = data.price
+        document.getElementById("copy_id").value = data.id
         
         fetch('/api/books/'+ data.book + "?token="+getCookie("userCookie").token , {
             method: 'GET',

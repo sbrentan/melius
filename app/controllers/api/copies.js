@@ -30,6 +30,10 @@ router.post('/', auth, is_admin, async function(req, res){
         res.status(400).json({status: 400, message: "Error, empty fields"})
         return;
     }
+    if(!Number(req.body.price) || Number(req.body.price) === NaN){
+    	res.status(400).json({status: 400, message: "Error, bad parameters"})
+        return;	
+    }
 
 	Book.findOne({_id: req.body.book}, async function(err, book){
 		if(err || !book){
@@ -87,6 +91,11 @@ router.put('/:id', auth, is_admin, async function(req, res){
 	if(!req.params.id || !req.body.book || !req.body.owner || !req.body.price){
         res.status(400).json({status: 400, message: "Error, empty fields"})
         return;
+    }
+    console.log(Number(req.body.price))
+    if(!Number(req.body.price) || Number(req.body.price) === NaN){
+    	res.status(400).json({status: 400, message: "Error, bad parameters"})
+        return;	
     }
     Copy.findOne({_id: req.params.id}, async function(err, copy) {
     	if(err)
