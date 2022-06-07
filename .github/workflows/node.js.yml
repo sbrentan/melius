@@ -38,11 +38,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     environment: melius_env
-    env:
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      SESSION_KEY: ${{ secrets.SESSION_KEY }}
-      DB_URL: ${{ secrets.DB_URL }}
-      PORT: ${{ secrets.PORT }}
     steps:
       - uses: actions/checkout@v3
       - uses: akhileshns/heroku-deploy@v3.12.12
@@ -50,3 +45,8 @@ jobs:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "melius-is2"
           heroku_email: "matteo68.mc@gmail.com"
+        env:
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          SESSION_KEY: ${{ secrets.SESSION_KEY }}
+          DB_URL: ${{ secrets.DB_URL }}
+          PORT: ${{ secrets.PORT }}
