@@ -45,3 +45,4 @@ jobs:
         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
         heroku_email: "matteo68.mc@gmail.com"
         heroku_app_name: "melius-is2"
+    - run: heroku apps
