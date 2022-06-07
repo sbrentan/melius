@@ -149,13 +149,13 @@ function signin(){
     .then(function(data) {
 
         if(status == 200){
-            console.log('signin')
             login(email, password)
             alert("Utente creato")
         }
-        else{
+        else if(status == 409)
             alert("Utente già esistente")
-        }
+        else if(status == 400)
+            alert("Dati errati")
         return;
     })
     .catch( error => console.error(error)); // If there is any error you will catch them here
@@ -272,7 +272,7 @@ async function getReservations(adminPage,userid) {
                     document.getElementById("btn"+resIds[i]['reservationId']).onclick = function() {
                         document.getElementById("modal"+resIds[i]['reservationId']).style.display = "block";
     
-                        fetch("/api/copies?book=" + resIds[i]['bookId'] + "&?token="+getCookie("userCookie").token)
+                        fetch("/api/copies?book=" + resIds[i]['bookId'] + "&token="+getCookie("userCookie").token)
                         .then((resp) => resp.json())
                         .then(function(data) {
                             data.forEach(copy => {
@@ -536,15 +536,10 @@ function updateUser(userId){
 }
 
 function purgeUser(userId){
-    var nope= false
-    var cookie = getCookie("userCookie");
-    if(!userId){
-        nope = true;
-            userId = cookie.id;
-        }
     var url = "/api/users/"+userId;
 
     console.log(userId);
+    var cookie = getCookie("userCookie");
 
     if(cookie == null) return; if(!confirm("Vuoi davvero eliminare l'utente"))
     return; fetch(url+ "?token=" + cookie.token , { method: 'DELETE', })
@@ -552,14 +547,10 @@ function purgeUser(userId){
         if(resp.status==200){
             console.log(resp);
             alert('Utente eliminato con successo');
-            if(nope){
-                window.location.href="/ui/";
-            }else{
-                window.location.href="/ui/dashboard#0";
-            }
+            location.href = "/ui/dashboard#0";
             return;
         }else{
-            alert("Libro non eliminato");
+            alert("Errore! Utente non eliminato");
         }
     })
     .catch( error => console.error(error) );
@@ -597,7 +588,6 @@ function fillBook(bookId){
             document.title="Nuovo libro";
             document.getElementById("divtitle").innerHTML="Nuovo libro";
             document.getElementById("confbutton").innerHTML="Crea";
-            document.getElementById("delbutton").style.display="None";
         }else{
             title.value = data.title;
             description.value = data.description;
@@ -692,7 +682,11 @@ function purgeBook(_url){
 
 function getCopies(containerName){
 
-    fetch("/api/copies")
+    var cookie = getCookie("userCookie");
+
+    if (cookie.id == null) return;
+
+    fetch("/api/copies?token="+cookie.token)
     .then((resp) => resp.json()) // Transform the data into json
     .then(function(data) { // Here you get the data to modify as you please
 
@@ -724,7 +718,6 @@ function getCopyDetails(copyId){
             document.title="Nuova Copia";
             document.getElementById("divtitle").innerHTML="Nuova Copia";
             document.getElementById("confbutton").innerHTML="Crea";
-            document.getElementById("delbutton").style.display="None";
             getUsers("copies");
             
         })
@@ -818,9 +811,10 @@ function purgeCopy(copyId){
             console.log(resp);
             window.alert('Copia eliminata correttamente');
             location.href = "/ui/dashboard#2"
-        }else{
-            window.alert('Errore! Copia eliminata');
-        }
+        }else if(resp.status==400)
+            window.alert('Errore! Copia già prenotata');
+        else
+            window.alert('Errore! Impossibile eliminare la copia');
     })
     .catch( error => console.error(error) );
 };

@@ -1,10 +1,10 @@
-var express = require('express');
-var router = express.Router();
-var config = require.main.require('./config')
-const User = require("../../models/user")
-var md5 = require("md5")
-const auth = require("../../middlewares/auth")
-var jwt = require('jsonwebtoken')
+const express   = require('express');
+const router    = express.Router();
+const config    = require.main.require('./config')
+const User      = require("../../models/user")
+const md5       = require("md5")
+const auth      = require("../../middlewares/auth")
+const jwt       = require('jsonwebtoken')
 
 //login 
 router.post("/login", async function(req, res) {

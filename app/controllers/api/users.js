@@ -12,7 +12,7 @@ const router          = express.Router();
 
 //ottiene tutti gli utenti
 router.get("/", auth, is_admin, async function(req, res) {
-    User.find({}, function(err, users){
+    User.find({}, async function(err, users){
         if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})
         else{
@@ -36,6 +36,11 @@ router.post('/', async function(req, res) {
         role: "user"
     });
 
+    if(!user.name || !user.email || !req.body.password){
+        res.status(400).json({status: 400, message: "Error, empty fields"})
+        return;
+    }
+
     User.findOne({email: user.email}, async function(err, result){
         if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})
@@ -51,7 +56,7 @@ router.post('/', async function(req, res) {
             });
         }
         else {
-            res.status(400).json({status: 400, message: "User with that email already exists"})
+            res.status(409).json({status: 400, message: "User with that email already exists"})
         }
     })
 });
@@ -59,7 +64,7 @@ router.post('/', async function(req, res) {
 //ottiene utente con un certo id
 router.get("/:id", auth, is_logged_user, async function(req, res) {
 
-    User.findOne({_id: req.params.id}, function(err, user){
+    User.findOne({_id: req.params.id}, async function(err, user){
         if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})
         else if(!user)
@@ -85,10 +90,15 @@ router.put("/:id", auth, is_logged_user, async function(req, res) {
             filter = { _id: user._id };
             if(req.body.password)
                 update = { password: md5(req.body.password) };
-            else
+            else{
                 update = { name: req.body.name, email: req.body.email };
+                if(!req.body.name || !req.body.email){
+                    res.status(400).json({status: 400, message: "Error, empty fields"})
+                    return;
+                }
+            }
 
-            User.findOneAndUpdate(filter, update, {new: true}, function(err, result){
+            User.findOneAndUpdate(filter, update, {new: true}, async function(err, result){
                 if(err){
                     res.status(500).json({status: 500, message: "Internal server error while updating"});
                 } else {
@@ -102,19 +112,40 @@ router.put("/:id", auth, is_logged_user, async function(req, res) {
 });
 
 //elimina utente
-router.delete("/:id", auth, is_logged_user, function(req, res) {
+router.delete("/:id", auth, is_logged_user, async function(req, res) {
     User.findOne({_id: req.params.id}, async function(err, result){
         if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})
         else if(!result)
             res.status(404).json({status: 404, message: "User not found"})
         else {
-            User.deleteOne({ _id: result._id }, function(err, result){
+            reservations = await Reservation.find({user: result._id})
+            for(i=0; i<reservations.length; i++){
+                r = await deleteReservation(res, reservations[i]._id)
+                console.log("Deleted linked reservation " + reservations[i]._id)
+            }
+
+            copies = await Copy.find({user: result._id})
+            for(i=0; i<copies.length; i++){
+                r = await unlinkCopy(res, result._id, copies[i]._id)
+                console.log("Unlinked owned book " + copies[i]._id)
+            }
+
+            User.deleteOne({ _id: result._id }, async function(err, result){
                 if(err){
                     console.log("Internal server error while deleting user: "+err);
                     res.status(500).json({status: 500, message: "Internal server error: " + err});
                 } else {
                     console.log("User deleted");
+
+                    if(req.user.id == result._id)
+                        for(i = 0; i < req.session.tokens.length; i++){
+                            if(req.session.tokens[i].token == req.query.token){
+                                req.session.tokens.splice(i, 1);
+                                break;
+                            }
+                        }
+
                     res.status(200).json({status: 200, message: "User deleted"});
                 }
             });
@@ -122,7 +153,11 @@ router.delete("/:id", auth, is_logged_user, function(req, res) {
     })
 });
 
-router.post("/:id/check", auth, is_logged_user, function(req, res) {
+router.post("/:id/check", auth, is_logged_user, async function(req, res) {
+    if(!req.body.password){
+        res.status(400).json({status: 400, message: "Error, empty fields"})
+        return;
+    }
     var user = new User({
         email: req.user.email,
         password: md5(req.body.password)
@@ -140,13 +175,13 @@ router.post("/:id/check", auth, is_logged_user, function(req, res) {
 
 router.get("/:id/reservations", auth, is_logged_user, async function(req, res) {
 
-    User.findOne({_id: req.params.id}, function(err, user){
+    User.findOne({_id: req.params.id}, async function(err, user){
         if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})
         else if(!user)
             res.status(404).json({status: 404, message: "User not found"})
         else {
-            Reservation.find({user: user._id, copy: ""}, function(err, reservations) {
+            Reservation.find({user: user._id, copy: ""}, async function(err, reservations) {
                 if(err)
                     res.status(500).json({status: 500, message: "Internal server error:" + err})
                 else
@@ -160,6 +195,10 @@ router.post('/:id/reservations', auth, is_logged_user, async function(req, res) 
     if(!req.logged){
         res.status(401).json({status: 401, message: "Cannot reserve book while not logged"})
     } else {
+        if(!req.body.book){
+            res.status(400).json({status: 400, message: "Error, empty fields"})
+            return;
+        }
         Book.findOne({_id: req.body.book}, async function(err, book) {
             if(err)
                 res.status(500).json({status: 500, message: "Internal server error:" + err})
@@ -198,7 +237,7 @@ router.post('/:id/reservations', auth, is_logged_user, async function(req, res) 
 
 router.get("/:id/reservations/:rid", auth, is_logged_user, async function(req, res) {
 
-    User.findOne({_id: req.params.id}, function(err, user){
+    User.findOne({_id: req.params.id}, async function(err, user){
         if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})
         else if(!user)
@@ -216,8 +255,8 @@ router.get("/:id/reservations/:rid", auth, is_logged_user, async function(req, r
     })
 });
 
-router.post("/:id/reservations/:rid", auth, is_logged_user, async function(req, res) {
-    User.findOne({_id: req.params.id}, function(err, user){
+router.post("/:id/reservations/:rid", auth, is_admin, async function(req, res) {
+    User.findOne({_id: req.params.id}, async function(err, user){
         if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})
         else if(!user)
@@ -249,36 +288,72 @@ router.post("/:id/reservations/:rid", auth, is_logged_user, async function(req, 
 
 router.delete("/:id/reservations/:rid", auth, is_logged_user, async function(req, res) {
 
-    User.findOne({_id: req.params.id}, function(err, user){
+    User.findOne({_id: req.params.id}, async function(err, user){
         if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})
         else if(!user)
             res.status(404).json({status: 404, message: "User not found"})
         else {
-            Reservation.findOne({_id: req.params.rid}, async function(err, reservation) {
-                if(err)
-                    res.status(500).json({status: 500, message: "Internal server error:" + err})
-                else if(!reservation)
-                    res.status(404).json({status: 404, message: "Reservation not found"})
-                else {
-
-                    Copy.findOne({_id: reservation.copy}, async function(err, copy){
-                        if(!copy || err){
-                            Reservation.deleteOne({ _id: req.params.rid }, async function(err, result){
-                                if(err){
-                                    console.log("Internal server error while deleting reservation: "+err);
-                                    res.status(500).json({status: 500, message: "Internal server error: " + err});
-                                } else {
-                                    console.log("Reservation deleted");
-                                    res.status(200).json({status: 200, message: "Reservation deleted"});
-                                }
-                            })
-                        }
-                    })
-                }
-            })
+            await deleteReservation(res, req.params.rid)
+            res.status(200).json({status: 200, message: "Reservation deleted"});
         }
     })
 });
+
+
+async function unlinkCopy(res, uid ,cid){
+    Copy.findOneAndUpdate({_id: cid}, {owner: ""}, async function (err, copy) {
+        if (err){
+            console.log(err);
+            res.status(500).json({status: 500, message: "Internal server error: " + err})
+        }
+        else{
+            console.log("Copy "+ copyBook + " unlinked from user " + uid);
+        }
+    })
+}
+
+async function deleteReservation(res, rid){
+    Reservation.findOne({_id: rid}, async function(err, reservation) {
+        if(err)
+            res.status(500).json({status: 500, message: "Internal server error:" + err})
+        else if(!reservation)
+            res.status(404).json({status: 404, message: "Reservation not found"})
+        else {
+
+            console.log("reservation is "+reservation)
+            console.log("reservationcopy is "+reservation.copy)
+            Copy.findOne({_id: reservation.copy}, async function(err, copy){
+                console.log("copy is " + copy)
+                console.log("err is " + err)
+                /*if(err){
+                    res.status(500).json({status: 500, message: "Internal server error: " + err});
+                    console.log("Internal server error: " + err)
+                    return;
+                }*/
+
+                if(!err && reservation.copy){
+                    console.log("Deleting copy linked to reservation...")
+                    result = await Copy.deleteOne({_id: copy._id})
+                    console.log(result)
+                    if(!result || !result.deletedCount){
+                        res.status(500).json({status: 500, message: "Internal server error: " + result});
+                        return;
+                    }
+                }
+
+
+                Reservation.deleteOne({ _id: rid }, async function(err, result){
+                    if(err){
+                        console.log("Internal server error while deleting reservation: "+err);
+                        res.status(500).json({status: 500, message: "Internal server error: " + err});
+                    } else {
+                        console.log("Reservation " + rid + " deleted");
+                    }
+                })
+            })
+        }
+    })
+}
 
 module.exports = router

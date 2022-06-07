@@ -12,7 +12,13 @@
 
 - on user delete: delete reservations, update owned/bought books?
 - add controls on input
-- add mock spy on .save in testing
+? add mock spy on .save in testing
+X on copy delete: if all copies are reserved?
+X update is_admin, is_logged_user on all methods
+
+DOCS:
+	- copy delete errors
+	- user already exists 409
 
 
 ##MUST
