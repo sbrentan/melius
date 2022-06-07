@@ -1,14 +1,15 @@
 const express 		= require('express');
 const Copy 			= require("../../models/copy")
 const Book 			= require("../../models/book")
+const Reservation	= require("../../models/reservation")
 const is_admin  	= require("../../middlewares/is_admin")
 const auth  		= require("../../middlewares/auth")
 const router		= express.Router();
 
-router.get('/', async function(req, res){
-	filter = {}
+router.get('/', auth, is_admin, async function(req, res){
+	filter = {buyer: ""}
 	if(req.query.book)
-		filter = {book: req.query.book}
+		filter = {book: req.query.book, buyer: ""}
     Copy.find(filter, async function(err, copies) {
     	if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})
@@ -22,7 +23,12 @@ router.get('/', async function(req, res){
     })
 })
 
-router.post('/', async function(req, res){
+router.post('/', auth, is_admin, async function(req, res){
+
+	if(!req.body.book || !req.body.owner || !req.body.price){
+        res.status(400).json({status: 400, message: "Error, empty fields"})
+        return;
+    }
 
 	Book.findOne({_id: req.body.book}, async function(err, book){
 		if(err || !book){
@@ -35,6 +41,8 @@ router.post('/', async function(req, res){
 		    .sort('-id')
 		if(last_copy)
 			newid = last_copy.id+1;
+		console.log(last_copy)
+		console.log(newid)
 	    var new_copy = new Copy({
 	    	id: newid,
 			book: req.body.book,
@@ -57,7 +65,7 @@ router.post('/', async function(req, res){
 	})
 })
 
-router.get('/:id', async function(req, res){
+router.get('/:id', auth, is_admin, async function(req, res){
     Copy.findOne({_id: req.params.id}, async function(err, copy) {
     	if(err)
 			res.status(500).json({status: 500, message: "Internal server error: " + err})
@@ -71,7 +79,11 @@ router.get('/:id', async function(req, res){
     })
 })
 
-router.put('/:id', auth, async function(req, res){
+router.put('/:id', auth, is_admin, async function(req, res){
+	if(!req.params.id || !req.body.book || !req.body.owner || !req.body.price){
+        res.status(400).json({status: 400, message: "Error, empty fields"})
+        return;
+    }
     Copy.findOne({_id: req.params.id}, async function(err, copy) {
     	if(err)
 			res.status(500).json({status: 500, message: "Internal server error: " + err})
@@ -97,20 +109,41 @@ router.put('/:id', auth, async function(req, res){
     })
 })
 
-router.delete('/:id', auth, async function(req, res){
+router.delete('/:id', auth, is_admin, async function(req, res){
     Copy.findOne({_id: req.params.id}, async function(err, copy) {
     	if(err)
 			res.status(500).json({status: 500, message: "Internal server error: " + err})
 		else if(!copy)
 			res.status(404).json({status: 404, message: "Copy not found"})
 		else{
-			copy.delete(async function (err, copy) {
+			copies_found = await Copy.find({book: copy.book, buyer: ""}).count()
+			reserv_found = await Reservation.find({book: copy.book, copy: ""}).count()
+			avail = copies_found - reserv_found
+
+			if(!copy.buyer){
+				//copy not bought
+				if(avail <= 0){
+					//reservation full
+					res.status(400).json({status: 400, message: "Cannot delete copy, already reserved"})
+					return
+				}
+			} else {
+				result = await Reservation.deleteOne({ book: copy.book, copy: copy._id })
+				console.log(result)
+				if(!result || !result.deletedCount){
+					res.status(500).json({status: 500, message: "Internal server error: " + result})
+					return
+				}
+			}
+
+			copyBook = copy.book;
+			Copy.deleteOne({_id: copy._id}, async function (err, copy) {
 				if (err){
 					console.log(err);
 					res.status(500).json({status: 500, message: "Internal server error: " + err})
 				}
 				else{
-					console.log("Copy "+ copy.book + " deleted.");
+					console.log("Copy "+ copyBook + " deleted.");
 					res.status(200).json({status: 200, message: "Copy deleted successfully"})
 				}
 			})

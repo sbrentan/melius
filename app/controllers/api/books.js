@@ -23,6 +23,11 @@ router.post('/', auth, is_admin, async function(req, res){
 		image: ""
 	});
 
+	if(!req.body.title || !req.body.description || !req.body.author){
+        res.status(400).json({status: 400, message: "Error, empty fields"})
+        return;
+    }
+
 	// Save the new model instance, passing a callback
 	new_book.save(async function (err, book) {
 		if (err){
@@ -56,6 +61,7 @@ router.get('/:id', async function(req, res){
 })
 
 router.put('/:id', auth, is_admin, async function(req, res){
+
     Book.findOne({_id: req.params.id}, async function(err, book) {
     	if(err)
 			res.status(500).json({status: 500, message: "Internal server error: " + err})
@@ -68,6 +74,10 @@ router.put('/:id', auth, is_admin, async function(req, res){
 				author: req.body.author,
 				image: ""
 			}
+			if(!req.body.book || !req.body.owner || !req.body.price){
+		        res.status(400).json({status: 400, message: "Error, empty fields"})
+		        return;
+		    }
 			Book.findOneAndUpdate({_id: book._id}, update, {new:true}, async function (err, result) {
 				if (err){
 					console.log(err);
