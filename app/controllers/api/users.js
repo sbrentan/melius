@@ -1,6 +1,6 @@
 const express         = require('express');
 const md5             = require("md5")
-const config          = require('../../config')
+const config          = require.main.require('./config')
 const auth            = require("../../middlewares/auth")
 const is_logged_user  = require("../../middlewares/is_logged_user")
 const is_admin        = require("../../middlewares/is_admin")

@@ -1,18 +1,19 @@
-var express = require('express');
-var path = require("path")
-var app = express();
-var parser = require('body-parser');
-var session = require('express-session');
+const express = require('express');
+const path = require("path")
+const app = express();
+const parser = require('body-parser');
+const session = require('express-session');
+const config = require.main.require('./config')
 
 app.set('views', path.join(__dirname, './views/'));
 app.set('view engine', 'ejs');
 
-app.use('/public', express.static('public')); 
+app.use('/public', express.static(path.join(__dirname, './public/'))); 
 app.use(parser.json())
 
 const oneDay = 1000 * 60 * 60 * 24;
 app.use(session({
-    secret: "sessionsecretkeyBOB",
+    secret: config.SESSION_KEY,
     saveUninitialized: true,
     cookie: { maxAge: oneDay },
     resave: true

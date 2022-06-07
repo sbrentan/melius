@@ -10,6 +10,9 @@
 
 ################## SPRINT 2
 
+- on user delete: delete reservations, update owned/bought books?
+
+
 ##MUST
 - on new copy add select tag
 - add "Accept reservation" on dashboard: remember to change both fields in copy and reservation --API/UI

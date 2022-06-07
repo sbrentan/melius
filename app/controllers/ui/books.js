@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var config = require('../../config')
+var config = require.main.require('./config')
 const Book = require("../../models/book")
 
 router.get("/", async function(req, res) {
