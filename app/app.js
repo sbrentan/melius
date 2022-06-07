@@ -3,7 +3,7 @@ const path = require("path")
 const app = express();
 const parser = require('body-parser');
 const session = require('express-session');
-const config = require.main.require('./config')
+const config = require('../config')
 
 app.set('views', path.join(__dirname, './views/'));
 app.set('view engine', 'ejs');

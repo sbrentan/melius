@@ -72,7 +72,9 @@ describe('GET /api/books', () => {
           _id: "1010",
           title: 'se2 title',
           description: 'se2 desc',
-          author: 'se2 author'
+          author: 'se2 author',
+          availability: 0,
+          starting_price: "?"
       });
   });
 

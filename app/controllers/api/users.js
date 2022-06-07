@@ -1,6 +1,6 @@
 const express         = require('express');
 const md5             = require("md5")
-const config          = require.main.require('./config')
+const config          = require('../../../config')
 const auth            = require("../../middlewares/auth")
 const is_logged_user  = require("../../middlewares/is_logged_user")
 const is_admin        = require("../../middlewares/is_admin")
@@ -15,6 +15,8 @@ router.get("/", auth, is_admin, async function(req, res) {
     User.find({})
         .then(users => {
             for(i=0; i<users.length; i++){
+                if(users[i].toObject)
+                    users[i] = users[i].toObject();
                 delete users[i].password
                 if("__v" in users[i]) delete users[i].__v;
             }
@@ -69,6 +71,8 @@ router.get("/:id", auth, is_logged_user, async function(req, res) {
             if(!user)
                 res.status(404).json({status: 404, message: "User not found"})
             else {
+                if(user.toObject)
+                    user = user.toObject();
                 if("__v" in user) delete user.__v;
                 delete user.password
                 res.send(user);

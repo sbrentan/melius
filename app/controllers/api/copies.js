@@ -10,17 +10,18 @@ router.get('/', auth, is_admin, async function(req, res){
 	filter = {buyer: ""}
 	if(req.query.book)
 		filter = {book: req.query.book, buyer: ""}
-    Copy.find(filter, async function(err, copies) {
-    	if(err)
-            res.status(500).json({status: 500, message: "Internal server error:" + err})
-        else{
-        	for(i=0; i<copies.length; i++){
-        		copies[i] = copies[i].toObject();
+    Copy.find(filter)
+    	.then(copies => {
+    		for(i=0; i<copies.length; i++){
+    			if(copies[i].toObject)
+					copies[i] = copies[i].toObject();
         		if("__v" in copies[i]) delete copies[i].__v;
         	}
             res.send(copies);
-        }
-    })
+    	})
+    	.catch(err => {
+    		res.status(500).json({status: 500, message: "Internal server error:" + err})
+    	})
 })
 
 router.post('/', auth, is_admin, async function(req, res){
@@ -71,7 +72,8 @@ router.get('/:id', auth, async function(req, res){
     		if(!copy)
 				res.status(404).json({status: 404, message: "Copy not found"})
 			else{
-				copy = copy.toObject();
+				if(copy.toObject)
+					copy = copy.toObject();
 				if("__v" in copy) delete copy.__v;
 	    		res.send(copy)
 	    	}

@@ -3,7 +3,7 @@ const jwt      = require('jsonwebtoken'); // used to create, sign, and verify to
 const app      = require('../../app');
 const mongoose = require('mongoose');
 const session  = require('supertest-session');
-const config   = require.main.require('./config')
+const config   = require('../../../config')
 const md5      = require("md5")
 jest.setTimeout(1000)
 
@@ -13,7 +13,7 @@ var testSession = null;
 beforeAll( async () => {
   testSession = session(app);
   jest.unmock('mongoose');
-  connection = await  mongoose.connect(config.db_url, {useNewUrlParser: true, useUnifiedTopology: true});
+  connection = await  mongoose.connect(process.env.DB_URL, {useNewUrlParser: true, useUnifiedTopology: true});
   const Copy = require('../../models/copy');
   copy = {
         _id: "100",

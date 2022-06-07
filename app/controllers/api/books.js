@@ -55,15 +55,16 @@ router.post('/', auth, is_admin, async function(req, res){
 })
 
 router.get('/:id', async function(req, res){
-    Book.findOne({_id: req.params.id}, async function(err, book) {
-    	if(err)
-			res.status(500).json({status: 500, message: "Internal server error: " + err})
-		else if(!book)
-			res.status(404).json({status: 404, message: "Book not found"})
-		else{
-			copies_found = await Copy.find({book: book._id, buyer: ""}).count()
+    Book.findOne({_id: req.params.id})
+    	.then(async book => {
+    		if(!book){
+				res.status(404).json({status: 404, message: "Book not found"})
+				return
+    		}
+    		copies_found = await Copy.find({book: book._id, buyer: ""}).count()
             reserv_found = await Reservation.find({book: book._id, copy: ""}).count()
-            book = book.toObject()
+            if(book.toObject)
+            	book = book.toObject()
 			book.availability = copies_found - reserv_found;
 			if("__v" in book) delete book.__v;
 
@@ -75,8 +76,11 @@ router.get('/:id', async function(req, res){
 		   	else
 		   		book.starting_price = "?"
     		res.send(book)
-		}
-    })
+    	})
+    	.catch(err => {
+    		console.log(err)
+    		res.status(500).json({status: 500, message: "Internal server error: " + err})
+    	})
 })
 
 router.put('/:id', auth, is_admin, async function(req, res){
