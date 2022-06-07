@@ -11,13 +11,7 @@ router.get('/new', async function(req, res) {
 })
 
 router.get('/:id', async function(req, res) {
-    Copy.findOne({_id: req.params.id}, async function(err, result) {
-        if(err)
-            res.status(404).send("Copy not found")
-        else
-            console.log(result)
-            res.render('copy_edit', {copy: result});
-    })
+    res.render('copy_edit', {copy: req.params.id});
 })
 
 module.exports = router

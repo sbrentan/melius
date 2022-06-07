@@ -1,9 +1,14 @@
 <%- include('common/header.ejs') %>
 		<title>Profile</title>
 	</head>
-	<body onload="getProfile(); setheader()">
+	<body onload="getProfile(true); setheader()">
 		<center>
-			<div style="background: lightblue; padding: 25px 0;"id="profileInfo"><b style="font-size: 40px">Info</b></div><br>
+			<div style="background: lightblue; padding: 25px 0;"id="profileInfo"><b style="font-size: 40px">Info</b>
+				<p id="email"></p>
+				<p id="name"></p>
+				<button class="button" type="button" onclick='location.href="/ui/profile_edit"'>modifica profilo</button>
+			</div><br>
+			
 			<div style="background: #f1f1f1; padding: 25px 0;"id="reservations"><b style="font-size: 40px">Prenotazioni</b><br></div>
 		</center>
 	</body>

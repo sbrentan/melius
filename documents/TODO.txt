@@ -10,8 +10,60 @@
 
 ################## SPRINT 2
 
-- heroku deployment
+- on user delete: delete reservations, update owned/bought books?
+- add controls on input
+? add mock spy on .save in testing
+X on copy delete: if all copies are reserved?
+X update is_admin, is_logged_user on all methods
+
+DOCS:
+	- copy delete errors
+	- user already exists 409
+
+
+##MUST
+- on new copy add select tag
+- add "Accept reservation" on dashboard: remember to change both fields in copy and reservation --API/UI
+- "Delete reservation" on profile
+- "Change password", "Edit profile" on profile
+	- API check password is correct -> POST /api/users/{id}/check with password in body
+- Test cases
+- Form information requests
+	- ADD contacts api response POST /api/contacts with body parameters
+- "Dashboard"
+	- add/delete/view/edit users
+	- add/delete/view/edit books
+	- add/delete/view/edit copies
+	- General informations?
+- add admin authentication to is_logged_user
+- add admin authentication to is_logged_user -----------------DONE
+- add is_admin to various methods
+- change new copies button to new copy and message
+
+- starting price displayed in book
+
+
+
+################### NEW
+
+- check input in api functions: book.owner/buyer
+- error handling										NOT TESTED
+- user delete confirmation								DONE
+- user select in new copy
+- adjust back button in dashboard						DONE
+
+
+
+
+- API DOCS:
+	- POST /api/users/{id}/check
+	- POST /api/contacts
+
+##OPTIONAL
 - API change callbacks into promises .then e .catch
 - add "end()" to all methods to avoid random app crashes?
-- on new copy add select tag
-- add "Accept reservation" on dashboard: remember to change both fields in copy and reservation
+
+- heroku deployment
+
+
+

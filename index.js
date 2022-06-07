@@ -1,16 +1,13 @@
-const app = require('./app.js');
+const app       = require('./app/app.js');
+const config    = require('./config.js')
 
 //Import the mongoose module
 var mongoose = require('mongoose');
 
-//Set up default mongoose connection
-//var mongoDB = 'mongodb://localhost:27017/melius';
-var mongoDB = 'mongodb+srv://melius:qwerty123@melius.i26zq.mongodb.net/melius?retryWrites=true&w=majority';
-
 const port = process.env.PORT || 80;
 
 //Get the default connection
-mongoose.connect(mongoDB, {useNewUrlParser: true, useUnifiedTopology: true})
+mongoose.connect(config.DB_URL, {useNewUrlParser: true, useUnifiedTopology: true})
 .then ( () => {
 
     console.log("Connected to Database");

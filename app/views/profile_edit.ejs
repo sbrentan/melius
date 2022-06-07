@@ -1,0 +1,21 @@
+<%- include('common/header.ejs') %>
+		<title>Profile edit</title>
+	</head>
+	<body onload="getProfile(false);setheader()">
+		<center>
+            <div style="background: lightblue; padding: 25px 0;text-align:center;"><b style="font-size: 40px">modifica profilo</b><br>
+                <label for="name">name: </label>
+                <input class="inputField" type="text" id="name" required><br>
+                <label for="email">email: </label>
+			    <input class="inputField" type="text" id="email" required><br>
+				<button class="button" type="button" onclick="editProfile()">modifica profilo</button>
+				<button class="delete" name="adminonly" onclick="purgeUser()">Elimina</button>
+			</div><br>
+			<div style="background: #f1f1f1; padding: 25px 0;"><b style="font-size: 40px">cambio password</b><br>
+                <input class="inputField" type="password" id="oldPassword" placeholder="Vecchia Password" required>
+			    <input class="inputField" type="password" id="newPassword" placeholder="Nuova Password" required>
+			    <button class="button" type="button" onclick="changePassword()">cambio password</button>
+			</div>
+		</center>
+	</body>
+</html>

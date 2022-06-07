@@ -1,6 +1,5 @@
 module.exports = function(req, res, next) {
     req.logged = false
-    console.log(req.query)
     if (req.query.token) {
         req.session.tokens = (req.session.tokens || [])
         for(i=0; i<req.session.tokens.length; i++){
