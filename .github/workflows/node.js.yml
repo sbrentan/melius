@@ -41,7 +41,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: akhileshns/heroku-deploy@v3.12.12
-        with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_email: "matteo68.mc@gmail.com"
-          heroku_app_name: "melius-is2"
+       with:
+         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+         heroku_email: "matteo68.mc@gmail.com"
+         heroku_app_name: "melius-is2"
