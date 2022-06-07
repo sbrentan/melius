@@ -13,7 +13,6 @@ jobs:
 
     environment: melius_env
     env:
-      HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
       SESSION_KEY: ${{ secrets.SESSION_KEY }}
       DB_URL: ${{ secrets.DB_URL }}
@@ -39,9 +38,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     environment: melius_env
-    # env:
-    #   HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-    #   HEROKU_MAIL: ${{ secrets.HEROKU_MAIL }}
+    env:
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      SESSION_KEY: ${{ secrets.SESSION_KEY }}
+      DB_URL: ${{ secrets.DB_URL }}
+      PORT: ${{ secrets.PORT }}
     steps:
       - uses: actions/checkout@v3
       - uses: akhileshns/heroku-deploy@v3.12.12
@@ -49,35 +50,3 @@ jobs:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "melius-is2"
           heroku_email: "matteo68.mc@gmail.com"
-
-
-      # - run: |
-      #     cat >~/.netrc <<EOF
-      #     machine api.heroku.com
-      #         login $HEROKU_MAIL
-      #         password $HEROKU_API_KEY
-      #     machine git.heroku.com
-      #         login $HEROKU_MAIL
-      #         password $HEROKU_API_KEY
-      #     EOF
-      # - run: cat ~/.netrc
-      # - run: heroku git:remote -a melius-is2
-      # - run: git push heroku HEAD:refs/heads/main
-
-
-
-
-      
-
-    # - run: heroku git:remote -a https://git.heroku.com/melius-is2.git
-    # - run: |
-    #       cat > ~/.netrc <<EOF
-    #         machine api.heroku.com
-    #           login matteo68.mc@gmail.com
-    #           password ${{secrets.HEROKU_API_KEY}}
-    #         machine git.heroku.com
-    #           login matteo68.mc@gmail.com
-    #           password ${{secrets.HEROKU_API_KEY}}
-    #       EOF
-    # - run: heroku git:remote --app melius-is2
-    # - run: git push heroku HEAD:main

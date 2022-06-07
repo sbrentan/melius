@@ -4,7 +4,7 @@ const config    = require('./config.js')
 //Import the mongoose module
 var mongoose = require('mongoose');
 
-const port = process.env.PORT || 80;
+const port = config.PORT || 80;
 
 //Get the default connection
 mongoose.connect(config.DB_URL, {useNewUrlParser: true, useUnifiedTopology: true})
