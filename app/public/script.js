@@ -215,11 +215,13 @@ function getProfile(reservations) {
     .catch( error => console.log(status));//console.error(error) ); // If there is any error you will catch them here
 }
 
-async function getReservations(adminPage) {
+async function getReservations(adminPage,userid) {
     var status,dataRes,modalName,btnName,reservationId,bookTitle,bookId;
     var resIds = []
 
     var id = getCookie("userCookie").id.toString();
+    if (adminPage) 
+        id = userid;
 
     if (id == null) return;
 
@@ -497,7 +499,7 @@ function fillUserEdit(userId){
     })
     .catch( error => console.error(error) );
 
-    getReservations(true);
+    getReservations(true,userId);
 }
 
 function updateUser(userId){
