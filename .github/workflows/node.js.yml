@@ -46,5 +46,14 @@ jobs:
     #     heroku_app_name: "melius-is2"
     #     heroku_email: "matteo68.mc@gmail.com"
     # - run: heroku git:remote -a https://git.heroku.com/melius-is2.git
-    - run: git remote add heroku https://heroku:${{secrets.HEROKU_API_KEY}}@git.heroku.com/melius-is2.git
-    - run: git push heroku HEAD:main -f
+    - run: |
+          cat > ~/.netrc <<EOF
+            machine api.heroku.com
+              login $HEROKU_EMAIL
+              password $HEROKU_API_KEY
+            machine git.heroku.com
+              login $HEROKU_EMAIL
+              password $HEROKU_API_KEY
+          EOF
+    - run: git remote add heroku -a melius-is2
+    - run: git push heroku HEAD:main
