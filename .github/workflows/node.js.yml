@@ -39,10 +39,16 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
-    - uses: actions/checkout@v2
-    - uses: akhileshns/heroku-deploy@v3.12.12
-      with:
-        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-        heroku_email: "matteo68.mc@gmail.com"
-        heroku_app_name: "melius-is2"
-    - run: heroku apps
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Deploy code
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_email: "matteo68.mc@gmail.com"
+          heroku_app_name: "melius-is2"
+          dontuseforce: true
+          dontautocreate: true
