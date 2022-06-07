@@ -536,10 +536,15 @@ function updateUser(userId){
 }
 
 function purgeUser(userId){
+    var nope= false
+    var cookie = getCookie("userCookie");
+    if(!userId){
+        nope = true;
+            userId = cookie.id;
+        }
     var url = "/api/users/"+userId;
 
     console.log(userId);
-    var cookie = getCookie("userCookie");
 
     if(cookie == null) return; if(!confirm("Vuoi davvero eliminare l'utente"))
     return; fetch(url+ "?token=" + cookie.token , { method: 'DELETE', })
@@ -547,7 +552,11 @@ function purgeUser(userId){
         if(resp.status==200){
             console.log(resp);
             alert('Utente eliminato con successo');
-            location.href = "/ui/dashboard#0";
+            if(nope){
+                window.location.href="/ui/";
+            }else{
+                window.location.href="/ui/dashboard#0";
+            }
             return;
         }else{
             alert("Libro non eliminato");
@@ -588,6 +597,7 @@ function fillBook(bookId){
             document.title="Nuovo libro";
             document.getElementById("divtitle").innerHTML="Nuovo libro";
             document.getElementById("confbutton").innerHTML="Crea";
+            document.getElementById("delbutton").style.display="None";
         }else{
             title.value = data.title;
             description.value = data.description;
@@ -714,6 +724,7 @@ function getCopyDetails(copyId){
             document.title="Nuova Copia";
             document.getElementById("divtitle").innerHTML="Nuova Copia";
             document.getElementById("confbutton").innerHTML="Crea";
+            document.getElementById("delbutton").style.display="None";
             getUsers("copies");
             
         })
