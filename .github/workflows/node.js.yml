@@ -1,17 +1,4 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: Node.js CI
-
-  # This is used to load Environment-level secrets, from the specified environment.
-  # Instead, repository secrets are loaded by default.
-  environment: melius_env
-  env:
-    SECRET_KEY: ${{ secrets.SECRET_KEY }}
-    SESSION_KEY: ${{ secrets.SESSION_KEY }}
-    DB_URL: ${{ secrets.DB_URL }}
-    PORT: ${{ secrets.PORT }}
-
 
 on:
   push:
@@ -24,10 +11,16 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    environment: melius_env
+    env:
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      SESSION_KEY: ${{ secrets.SESSION_KEY }}
+      DB_URL: ${{ secrets.DB_URL }}
+      PORT: ${{ secrets.PORT }}
+
     strategy:
       matrix:
         node-version: [16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
     - uses: actions/checkout@v3
@@ -36,7 +29,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm ci #similar to npm install , except it's meant to be used in automated environments
+    - run: npm ci
     - run: npm run build --if-present
     - run: npm test
 
@@ -46,7 +39,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: akhileshns/heroku-deploy@v3.12.12
-    # https://github.com/marketplace/actions/deploy-to-heroku#procfile-passing
       with:
         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
         heroku_app_name: "melius-is2"
