@@ -732,6 +732,7 @@ function getCopyDetails(copyId){
             document.getElementById("confbutton").innerHTML="Crea";
             document.getElementById("delbutton").style.display="None";
             document.getElementById("copy_id").style.display="None";
+            document.getElementById("lbl_copy_id").style.display="None";
             getUsers("copies");
             
         })
