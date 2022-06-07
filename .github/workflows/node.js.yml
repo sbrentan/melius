@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Melius CI
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [14.x]
 
     steps:
     - uses: actions/checkout@v3
@@ -40,8 +40,8 @@ jobs:
     needs: test
     steps:
     - uses: actions/checkout@v2
-     - uses: akhileshns/heroku-deploy@v3.12.12
-       with:
-         heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-         heroku_email: "matteo68.mc@gmail.com"
-         heroku_app_name: "melius-is2"
+    - uses: akhileshns/heroku-deploy@v3.12.12
+      with:
+        heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+        heroku_email: "matteo68.mc@gmail.com"
+        heroku_app_name: "melius-is2"
