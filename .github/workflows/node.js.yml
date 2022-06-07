@@ -59,8 +59,9 @@ jobs:
               login $HEROKU_MAIL
               password $HEROKU_API_KEY
           EOF
+      - run: echo ~/.netrc
       - run: heroku git:remote -a melius-is2
-      - run: git push heroku HEAD:refs/heads/master
+      - run: git push heroku HEAD:refs/heads/main
 
 
 
