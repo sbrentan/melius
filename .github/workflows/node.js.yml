@@ -55,5 +55,5 @@ jobs:
               login $HEROKU_EMAIL
               password $HEROKU_API_KEY
           EOF
-    - run: heroku git:remote -app melius-is2
+    - run: heroku git:remote --app melius-is2
     - run: git push heroku HEAD:main
