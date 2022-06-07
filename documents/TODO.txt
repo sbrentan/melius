@@ -11,6 +11,8 @@
 ################## SPRINT 2
 
 - on user delete: delete reservations, update owned/bought books?
+- add controls on input
+- add mock spy on .save in testing
 
 
 ##MUST
@@ -28,6 +30,24 @@
 	- add/delete/view/edit copies
 	- General informations?
 - add admin authentication to is_logged_user
+- add admin authentication to is_logged_user -----------------DONE
+- add is_admin to various methods
+- change new copies button to new copy and message
+
+- starting price displayed in book
+
+
+
+################### NEW
+
+- check input in api functions: book.owner/buyer
+- error handling										NOT TESTED
+- user delete confirmation								DONE
+- user select in new copy
+- adjust back button in dashboard						DONE
+
+
+
 
 - API DOCS:
 	- POST /api/users/{id}/check

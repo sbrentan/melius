@@ -1,21 +1,18 @@
 <%- include('common/header.ejs') %>
-		<title>Edit User</title>
+		<title>Modifica utente</title>
 	</head>
-	<body onload="setheader()">
-		<h2>Create</h2>
-        <form action="/api/users" method="POST">
-            <input type="text" name="name" required><br>
-            <input type="email" name="email" required><br>
-            <input type="password" name="password" required><br>
-            <input type="submit" value="Submit">
-        </form>
-		<br>
-		<h2>Update</h2>
-		<form action="/api/users/62810d38c7602d2964e6fa2f" method="POST">
-            <input type="text" name="name" required><br>
-            <input type="email" name="email" required><br>
-            <input type="password" name="password" required><br>
-            <input type="submit" value="Submit">
-        </form>
+	<body onload="fillUserEdit('<%= user %>'); setheader()">
+		<div><%- include('common/back.ejs') %></div>
+        <center>
+    		<h2>Modifica utente</h2>
+            <label for="name"><b>Nome: </b></label><input class="inputField" type="text" name="name" id="name" placeholder="Nome" required=""><br>
+            <label for="email"><b>Email: </b></label><input class="inputField" type="email" name="email" id="email" placeholder="Email" required=""><br>
+            <div style="width: 30%; margin: auto; margin-top: 10px;">
+                <button class="button" type="button" name="adminonly" onclick="updateUser('<%= user %>')">Modifica</button>
+                <button class="delete" name="adminonly" onclick="purgeUser('<%= user %>')">Elimina</button>
+            </div>
+            <div style="background: #f1f1f1; padding: 25px 0;"id="reservations"><b style="font-size: 40px">Prenotazioni</b><br></div>
+            <div id="modals"></div>
+        <center>
 	</body>
 </html>

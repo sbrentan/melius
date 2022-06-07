@@ -1,16 +1,17 @@
 <%- include('common/header.ejs') %>
-        <title><%= book ? 'Edit' : 'Insert' %> Book</title>
+        <title>Modifica Libro</title>
     </head>
-    <body onload="setheader()">
-        <div><a href="/ui/books"><button class="fa fa-arrow-left" style="font-size: 20px;"> Indietro</button></a></div>
+    <body onload="fillBook('<%= book %>'); setheader()">
+        <div><%- include('common/back.ejs') %></div>
         <br>
         <center>
-            <label>Title: </label><input style="margin: 10px 0;" type="text" name="title" value='<%= book ? book.title : "" %>' required><br>
-            <label>Description: </label><input style="margin: 10px 0;" type="text" name="description" value='<%= book ? book.description : "" %>' required><br>
-            <label>Author: </label><input style="margin: 10px 0;" type="text" name="author" value='<%= book ? book.author : "" %>' required><br>
+            <h2 id="divtitle">Modifica libro</h2>
+            <label for="title"><b>Titolo: </b></label><input class="inputField" type="text" name="title" id="title" placeholder="Titolo" required><br>
+            <label for="description"><b>Descrizione: </b></label><input class="inputField" type="text" name="description" id="description" placeholder="Descrizione" required><br>
+            <label for="author"><b>Autore: </b></label><input class="inputField" type="text" name="author" id="author" placeholder="Autore" required><br>
             <div style="width: 30%; margin: auto; margin-top: 10px;">
-                <input name="adminonly" style="margin: 0 10px" type="submit" value="<%= book ? 'Edit' : 'Insert' %>" onclick="insertBook('<%= book ? book._id : '' %>')">
-                <button name="adminonly" style="margin: 0 10px; <%= book ? '' : 'display: none' %>" onclick="purgeBook('<%= book.id %>')">Purge</button>
+                <button id="confbutton" class="button" type="button" name="adminonly" onclick="updateBook('<%= book %>')">Modifica</button>
+                <button class="delete" name="adminonly"onclick="purgeBook('<%= book %>')">Elimina</button>
             </div>
         </center>
   </body>

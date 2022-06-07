@@ -1,7 +1,28 @@
+<%- include('common/header.ejs') %>
 		<title>Contacts</title>
 	</head>
-	<body onload="setheader();setheader()">
-		<br>
-			<div>there's nothing here for now, so call me maybe</div>
+	<body onload="setheader();">
+		<center>
+			<div class="contact-container">
+				<h2>Contattaci</h2>
+				<table>
+					<tr>
+						<td>
+						    <input type="text" class="inputField" id="name" placeholder="Nome..." required>
+						    <br>
+						    <input type="text" class="inputField" id="surname" placeholder="Cognome..." required>
+						    <br>
+						    <input type="email" class="inputField" id="email" placeholder="Email..." required>
+						    <br>
+						</td>
+						<td style="padding: 0px 0px 0px 40px">
+						    <textarea id="subject" class="inputField" placeholder="Scrivi qualcosa..." style="height:200px" required></textarea>
+						    <br>
+						</td>
+					</tr>
+				</table>
+		    	<button class="button" type="button" onclick="askInfo()">Invia richiesta</button>
+			</div>
+		</center>
 	</body>
 </html>

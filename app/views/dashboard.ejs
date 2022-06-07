@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="../../public/style.css">
+        <script src="../../public/script.js" type="text/javascript"></script>	
+		<title>Dashboard</title>
+	</head>
+	<body onload="getUserStatus();dashboardautoselect();">
+		<div class="dashboardcontainer">
+		<div class="dashboardindex">
+			<button class="indexreturn indexbutton"><a href="/ui">Home</a></button>
+			<div class="indextitle">DashBoard</div>
+			<div class="divider"></div>
+			<button class="indexbutton" onclick="dashboardselected(0)">Users</button>
+			<div class="divider"></div>
+			<button class="indexbutton" onclick="dashboardselected(1)">Books</button>
+			<div class="divider"></div>
+			<button class="indexbutton" onclick="dashboardselected(2)">Copies</button>
+			<div class="divider"></div>
+		</div>
+		<div>
+			<div class="dashinnercontainter" id="usercontainer">
+				<div class="dashtitle">Utenti</div>
+				<div id="userlist" class="dashtable">
+				</div>
+			</div>
+			<div class="dashinnercontainter closed" id="bookdashcontainer">
+				<div class="dashtitle">Libri</div>
+				<a href="/ui/books/new" class="indexbutton newbutton">New book</a>
+				<div id="booklist" class="dashtable">
+				</div>
+			</div>
+			<div class="dashinnercontainter closed" id="copycontainer">
+				<div class="dashtitle">Copie</div>
+				<a href="/ui/copies/new" class="indexbutton newbutton">New copy</a>
+				<div id="copylist" class="dashtable">
+				</div>
+			</div>
+		</div>
+	</div>
+	</body>
+</html>

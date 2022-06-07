@@ -2,8 +2,8 @@ const express 		= require('express');
 const auth 			= require("../../middlewares/auth")
 const Book 			= require("../../models/book")
 const Copy 			= require("../../models/copy")
-const is_admin      = require("../../middlewares/is_admin")
 const Reservation 	= require("../../models/reservation")
+const is_admin      = require("../../middlewares/is_admin")
 const router 		= express.Router();
 
 router.get('/', async function(req, res){
@@ -52,8 +52,22 @@ router.get('/:id', async function(req, res){
 			res.status(500).json({status: 500, message: "Internal server error: " + err})
 		else if(!book)
 			res.status(404).json({status: 404, message: "Book not found"})
-		else
+		else{
+			copies_found = await Copy.find({book: book._id, buyer: ""}).count()
+            reserv_found = await Reservation.find({book: book._id, copy: ""}).count()
+            book = book.toObject()
+			book.availability = copies_found - reserv_found;
+			if("__v" in book) delete book.__v;
+
+			lowest_copy = await Copy.findOne()
+		    	.where({book: book._id})
+		    	.sort('price')
+		    if(lowest_copy)
+		    	book.starting_price = lowest_copy.price;
+		   	else
+		   		book.starting_price = "?"
     		res.send(book)
+		}
     })
 })
 

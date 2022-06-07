@@ -15,8 +15,14 @@ router.get("/", auth, is_admin, async function(req, res) {
     User.find({}, function(err, users){
         if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})
-        else
+        else{
+            for(i=0; i<users.length; i++){
+                users[i] = users[i].toObject();
+                if("__v" in users[i]) delete users[i].__v;
+                delete users[i].password;
+            }
             res.send(users);
+        }
     });
 });
 
@@ -59,6 +65,9 @@ router.get("/:id", auth, is_logged_user, async function(req, res) {
         else if(!user)
             res.status(404).json({status: 404, message: "User not found"})
         else {
+            user = user.toObject();
+            if("__v" in user) delete user.__v;
+            delete user.password;
             res.send(user);
         }
     })
@@ -97,7 +106,7 @@ router.delete("/:id", auth, is_logged_user, function(req, res) {
     User.findOne({_id: req.params.id}, async function(err, result){
         if(err)
             res.status(500).json({status: 500, message: "Internal server error:" + err})
-        else if(!user)
+        else if(!result)
             res.status(404).json({status: 404, message: "User not found"})
         else {
             User.deleteOne({ _id: result._id }, function(err, result){
@@ -137,7 +146,7 @@ router.get("/:id/reservations", auth, is_logged_user, async function(req, res) {
         else if(!user)
             res.status(404).json({status: 404, message: "User not found"})
         else {
-            Reservation.find({user: user._id}, function(err, reservations) {
+            Reservation.find({user: user._id, copy: ""}, function(err, reservations) {
                 if(err)
                     res.status(500).json({status: 500, message: "Internal server error:" + err})
                 else
@@ -207,6 +216,37 @@ router.get("/:id/reservations/:rid", auth, is_logged_user, async function(req, r
     })
 });
 
+router.post("/:id/reservations/:rid", auth, is_logged_user, async function(req, res) {
+    User.findOne({_id: req.params.id}, function(err, user){
+        if(err)
+            res.status(500).json({status: 500, message: "Internal server error:" + err})
+        else if(!user)
+            res.status(404).json({status: 404, message: "User not found"})
+        else {
+            Reservation.findOne({_id: req.params.rid}, async function(err, reservation) {
+                if(err)
+                    res.status(500).json({status: 500, message: "Internal server error:" + err})
+                else if(!reservation)
+                    res.status(404).json({status: 404, message: "Reservation not found"})
+                else{
+                    Copy.findOne({_id: req.body.copy}, async function(err, copy) {
+                        if(err)
+                            res.status(500).json({status: 500, message: "Internal server error:" + err})
+                        else if(!copy)
+                            res.status(404).json({status: 404, message: "Copy not found"})
+                        else{
+                            await Copy.findOneAndUpdate({_id: copy._id}, { buyer: req.user.id }, {new:true})
+                            await Reservation.findOneAndUpdate({_id: req.params.rid}, { copy: copy._id }, {new:true})
+                            res.status(200).json({status: 200, message: "Reservation accepted"});
+                            console.log("Accepted reservation "+reservation._id + " with copy "+copy._id)
+                        }
+                    })
+                }
+            })
+        }
+    })
+})
+
 router.delete("/:id/reservations/:rid", auth, is_logged_user, async function(req, res) {
 
     User.findOne({_id: req.params.id}, function(err, user){
@@ -221,13 +261,18 @@ router.delete("/:id/reservations/:rid", auth, is_logged_user, async function(req
                 else if(!reservation)
                     res.status(404).json({status: 404, message: "Reservation not found"})
                 else {
-                    Reservation.deleteOne({ _id: req.params.rid }, async function(err, result){
-                        if(err){
-                            console.log("Internal server error while deleting reservation: "+err);
-                            res.status(500).json({status: 500, message: "Internal server error: " + err});
-                        } else {
-                            console.log("Reservation deleted");
-                            res.status(200).json({status: 200, message: "Reservation deleted"});
+
+                    Copy.findOne({_id: reservation.copy}, async function(err, copy){
+                        if(!copy || err){
+                            Reservation.deleteOne({ _id: req.params.rid }, async function(err, result){
+                                if(err){
+                                    console.log("Internal server error while deleting reservation: "+err);
+                                    res.status(500).json({status: 500, message: "Internal server error: " + err});
+                                } else {
+                                    console.log("Reservation deleted");
+                                    res.status(200).json({status: 200, message: "Reservation deleted"});
+                                }
+                            })
                         }
                     })
                 }

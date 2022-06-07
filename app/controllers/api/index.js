@@ -5,7 +5,7 @@ app.use('/users', require('./users'));
 app.use('/books', require('./books'));
 app.use('/copies', require('./copies'));
 
-router.post('/contacts', async function(req, res){
+app.post('/contacts', async function(req, res){
     res.status(200).json({status: 200, message: "Mail sent correctly"})
 })
 
