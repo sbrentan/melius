@@ -50,10 +50,10 @@ jobs:
           cat > ~/.netrc <<EOF
             machine api.heroku.com
               login matteo68.mc@gmail.com
-              password $HEROKU_API_KEY
+              password ${{secrets.HEROKU_API_KEY}}
             machine git.heroku.com
               login matteo68.mc@gmail.com
-              password $HEROKU_API_KEY
+              password ${{secrets.HEROKU_API_KEY}}
           EOF
     - run: heroku git:remote --app melius-is2
     - run: git push heroku HEAD:main
